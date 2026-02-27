@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+}
+
+enum Role {
+  SALESBOY
+  ADMIN
+  OWNER
+}
+
+enum Product {
+  FLOUR
+  SUGAR
+  GROUNDNUT_OIL
+}
+
+model User {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  username    String    @unique
+  password    String    // bcrypt hashed
+  role        Role
+  submittedAt DateTime  @default(now())
+  deletedAt   DateTime?
+
+  @@map("users")
+}
+
+model Sale {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  date                DateTime
+  product             Product
+  unitType            String
+  quantity            Int
+  sellingPricePerUnit Float
+  totalAmount         Float
+  notes               String?
+  submittedBy         String
+  submittedAt         DateTime  @default(now())
+  deletedAt           DateTime?
+
+  @@map("sales")
+}
+
+model Purchase {
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  date                 DateTime
+  product              Product
+  unitType             String
+  quantity             Int
+  purchasePricePerUnit Float
+  totalCost            Float
+  supplierName         String
+  notes                String?
+  submittedBy          String
+  submittedAt          DateTime  @default(now())
+  deletedAt            DateTime?
+
+  @@map("purchases")
+}
+
+model CreditSupply {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  date               DateTime
+  customerName       String
+  product            Product
+  unitType           String
+  quantity           Int
+  agreedPricePerUnit Float
+  totalAmountOwed    Float
+  notes              String?
+  submittedBy        String
+  submittedAt        DateTime  @default(now())
+  deletedAt          DateTime?
+
+  @@map("credit_supplies")
+}
+
+model Expense {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  date        DateTime
+  description String
+  amount      Float
+  notes       String?
+  submittedBy String
+  submittedAt DateTime  @default(now())
+  deletedAt   DateTime?
+
+  @@map("expenses")
+}
+
+model Collection {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  date            DateTime
+  customerName    String
+  amountCollected Float
+  notes           String?
+  submittedBy     String
+  submittedAt     DateTime  @default(now())
+  deletedAt       DateTime?
+
+  @@map("collections")
+}
+
+model Lodgment {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  date        DateTime
+  amount      Float
+  bankName    String
+  notes       String?
+  submittedBy String
+  submittedAt DateTime  @default(now())
+  deletedAt   DateTime?
+
+  @@map("lodgments")
+}
+
+model StartingCapital {
+  id                      String    @id @default(auto()) @map("_id") @db.ObjectId
+  year                    Int       @unique
+  cashOnHand              Float
+  flourOpeningQty         Int
+  flourOpeningValuePerUnit Float
+  sugarOpeningQty         Int
+  sugarOpeningValuePerUnit Float
+  oilOpeningQty           Int
+  oilOpeningValuePerUnit  Float
+  totalStartingCapital    Float
+  setBy                   String
+  setAt                   DateTime  @default(now())
+  submittedAt             DateTime  @default(now())
+  deletedAt               DateTime?
+
+  @@map("starting_capitals")
+}
+
+model AuditLog {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  action      String
+  table       String
+  recordId    String
+  performedBy String
+  performedAt DateTime @default(now())
+  details     String
+  submittedAt DateTime @default(now())
+  deletedAt   DateTime?
+
+  @@map("audit_logs")
+}
