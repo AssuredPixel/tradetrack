@@ -4,30 +4,30 @@ import { NextResponse } from "next/server";
 export default withAuth(
     function middleware(req) {
         const token = req.nextauth.token;
-        const path = req.nextjsUrl.pathname;
+        const path = req.nextUrl.pathname;
 
-        // If not logged in, withAuth handles the redirect to /login
+        // withAuth handles the redirect to /login if token is missing
         if (!token) {
             return NextResponse.redirect(new URL("/login", req.url));
         }
 
         const role = token.role as string;
 
-        // SALESBOY restrictions
+        // SALESBOY Access Control
         if (role === "SALESBOY") {
             if (path.startsWith("/admin") || path.startsWith("/owner")) {
                 return NextResponse.redirect(new URL("/salesboy/dashboard", req.url));
             }
         }
 
-        // ADMIN restrictions
+        // ADMIN Access Control
         if (role === "ADMIN") {
             if (path.startsWith("/salesboy") || path.startsWith("/owner")) {
                 return NextResponse.redirect(new URL("/admin/dashboard", req.url));
             }
         }
 
-        // OWNER restrictions
+        // OWNER Access Control
         if (role === "OWNER") {
             if (path.startsWith("/salesboy") || path.startsWith("/admin")) {
                 return NextResponse.redirect(new URL("/owner/dashboard", req.url));
@@ -39,6 +39,9 @@ export default withAuth(
     {
         callbacks: {
             authorized: ({ token }) => !!token,
+        },
+        pages: {
+            signIn: "/login",
         },
     }
 );

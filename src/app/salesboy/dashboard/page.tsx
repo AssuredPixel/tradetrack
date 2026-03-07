@@ -1,15 +1,28 @@
 "use client";
 
-import { signOut } from "next-auth/react";
-import { Button } from "@/components/ui/button";
+import { User as UserIcon } from "lucide-react";
 
-export default function SalesboyDashboard() {
+export default function SalesBoyDashboard() {
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen space-y-4">
-            <h1 className="text-3xl font-bold">Sales Boy Dashboard</h1>
-            <Button onClick={() => signOut({ callbackUrl: "/login" })} variant="destructive">
-                Logout
-            </Button>
+        <div className="max-w-7xl mx-auto">
+            <header className="flex justify-between items-center pb-8 border-b border-white/5 mb-12">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                        <UserIcon className="w-6 h-6 text-emerald-500" />
+                    </div>
+                    <h1 className="text-3xl font-bold tracking-tight text-white">
+                        Sales Boy <span className="text-emerald-500">Dashboard</span>
+                    </h1>
+                </div>
+            </header>
+
+            <main className="glass-panel p-12 rounded-2xl flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-1 w-emerald-500 rounded-full mb-6" />
+                <h2 className="text-2xl font-semibold mb-4 text-white">Welcome back.</h2>
+                <p className="text-slate-400 max-w-md">
+                    Your professional sales management portal is being prepared. All trade tracking tools will be available here soon.
+                </p>
+            </main>
         </div>
     );
 }

@@ -65,6 +65,7 @@ export const authOptions: NextAuthOptions = {
     session: {
         strategy: "jwt",
         maxAge: 24 * 60 * 60, // 24 hours
+        updateAge: 60 * 60,    // Update the session every hour to maintain the 24h inactivity window
     },
     secret: process.env.NEXTAUTH_SECRET,
 };
