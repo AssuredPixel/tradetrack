@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Sale from "@/models/Sale";
+import Purchase from "@/models/Purchase";
 
 export async function POST(req: Request) {
     try {
@@ -21,6 +22,18 @@ export async function POST(req: Request) {
 
         await dbConnect();
 
+        // --- FIFO Cost Price Lookup ---
+        // Find the most recent Purchase for this product to snapshot the current cost price.
+        // This is set by the Junior Brother (Admin) when restocking. The Salesboy does NOT
+        // need to know or input this — it's automatic.
+        const latestPurchase = await Purchase.findOne(
+            { product, deletedAt: null },
+            { purchasePricePerUnit: 1 }
+        ).sort({ submittedAt: -1 }).lean();
+
+        const costPricePerUnit = latestPurchase?.purchasePricePerUnit || 0;
+        const totalCOGS = costPricePerUnit * Number(quantity);
+
         const newSale = new Sale({
             date: new Date(date),
             product,
@@ -28,6 +41,8 @@ export async function POST(req: Request) {
             quantity,
             sellingPricePerUnit,
             totalAmount,
+            costPricePerUnit,  // Snapshotted from latest Purchase at time of sale
+            totalCOGS,         // Exact COGS for this sale transaction
             notes,
             submittedBy: (session.user as any).username,
         });

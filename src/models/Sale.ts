@@ -8,6 +8,8 @@ export interface ISale extends Document {
     quantity: number;
     sellingPricePerUnit: number;
     totalAmount: number;
+    costPricePerUnit: number;  // Auto-populated from latest Purchase at time of sale
+    totalCOGS: number;         // costPricePerUnit * quantity, used for accurate margin calc
     notes?: string;
     submittedBy: string;
     submittedAt: Date;
@@ -22,6 +24,8 @@ const SaleSchema: Schema = new Schema(
         quantity: { type: Number, required: true },
         sellingPricePerUnit: { type: Number, required: true },
         totalAmount: { type: Number, required: true },
+        costPricePerUnit: { type: Number, default: 0 }, // Cost at time of sale from latest Purchase
+        totalCOGS: { type: Number, default: 0 },        // quantity * costPricePerUnit
         notes: { type: String },
         submittedBy: { type: String, required: true },
         deletedAt: { type: Date, default: null },
