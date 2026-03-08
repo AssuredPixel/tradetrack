@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import 'dotenv/config';
-import User, { Role } from '../models/User.js';
+import User from '../models/User.js';
+import { Role } from '../lib/types.js';
 
 const MONGODB_URI = process.env.DATABASE_URL;
 

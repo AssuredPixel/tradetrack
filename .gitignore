@@ -41,3 +41,16 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# next.js panic logs
+next-panic-*.log
+
+# custom logs
+*.log
+logs/

@@ -13,21 +13,25 @@ import {
     X,
     ShieldCheck,
     User as UserIcon,
-    Briefcase
+    Briefcase,
+    Receipt
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
+import { Role } from "@/lib/types";
+
 interface SidebarProps {
-    role: "SALESBOY" | "ADMIN" | "OWNER";
+    role: Role;
 }
 
 const navLinks = {
     SALESBOY: [
         { name: "Dashboard", href: "/salesboy/dashboard", icon: LayoutDashboard },
-        { name: "New Sale", href: "/salesboy/new-sale", icon: ShoppingCart },
-        { name: "History", href: "/salesboy/history", icon: History },
-        { name: "Inventory", href: "/salesboy/inventory", icon: Package },
+        { name: "Log Sale", href: "/salesboy/log-sale", icon: ShoppingCart },
+        { name: "Log Credit", href: "/salesboy/log-credit", icon: Briefcase },
+        { name: "Log Expense", href: "/salesboy/log-expense", icon: Receipt },
+        { name: "History", href: "/salesboy/today", icon: History },
     ],
     ADMIN: [
         { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -54,7 +58,7 @@ export default function AppLayoutShell({
     role
 }: {
     children: React.ReactNode;
-    role: "SALESBOY" | "ADMIN" | "OWNER"
+    role: Role
 }) {
     const pathname = usePathname();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);

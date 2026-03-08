@@ -1,10 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-
-export enum Product {
-    FLOUR = 'FLOUR',
-    SUGAR = 'SUGAR',
-    GROUNDNUT_OIL = 'GROUNDNUT_OIL',
-}
+import { Product } from '@/lib/types';
 
 export interface ISale extends Document {
     date: Date;

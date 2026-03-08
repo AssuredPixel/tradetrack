@@ -17,28 +17,36 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Incorrect username or password");
                 }
 
-                await dbConnect();
+                try {
+                    await dbConnect();
 
-                const user = await User.findOne({ username: credentials.username });
+                    const user = await User.findOne({ username: credentials.username });
 
-                if (!user || user.deletedAt) {
-                    throw new Error("Incorrect username or password");
+                    if (!user || user.deletedAt) {
+                        console.log(`Auth failed: User not found or deleted - ${credentials.username}`);
+                        throw new Error("Incorrect username or password");
+                    }
+
+                    const isPasswordValid = await bcrypt.compare(
+                        credentials.password,
+                        user.password
+                    );
+
+                    if (!isPasswordValid) {
+                        console.log(`Auth failed: Invalid password for user - ${credentials.username}`);
+                        throw new Error("Incorrect username or password");
+                    }
+
+                    console.log(`Auth success: ${user.username} (${user.role})`);
+                    return {
+                        id: user._id.toString(),
+                        username: user.username,
+                        role: user.role,
+                    };
+                } catch (error) {
+                    console.error("Authentication error:", error);
+                    throw error;
                 }
-
-                const isPasswordValid = await bcrypt.compare(
-                    credentials.password,
-                    user.password
-                );
-
-                if (!isPasswordValid) {
-                    throw new Error("Incorrect username or password");
-                }
-
-                return {
-                    id: user._id.toString(),
-                    username: user.username,
-                    role: user.role,
-                };
             },
         }),
     ],

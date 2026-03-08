@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { Product } from './Sale.js';
+import { Product } from '@/lib/types';
 
 export interface ICreditSupply extends Document {
     date: Date;
