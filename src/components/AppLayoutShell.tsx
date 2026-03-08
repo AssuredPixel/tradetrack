@@ -35,9 +35,12 @@ const navLinks = {
     ],
     ADMIN: [
         { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+        { name: "Log Purchase", href: "/admin/log-purchase", icon: ShoppingCart },
+        { name: "Log Collection", href: "/admin/log-collection", icon: Briefcase },
+        { name: "Log Lodgment", href: "/admin/log-lodgment", icon: Receipt },
+        { name: "Today's Entries", href: "/admin/today", icon: History },
         { name: "Manage Users", href: "/admin/users", icon: UserIcon },
         { name: "Settings", href: "/admin/settings", icon: ShieldCheck },
-        { name: "Audit Logs", href: "/admin/logs", icon: History },
     ],
     OWNER: [
         { name: "Dashboard", href: "/owner/dashboard", icon: LayoutDashboard },

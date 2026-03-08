@@ -139,13 +139,20 @@ export default function SalesBoyDashboard() {
                 </Link>
             </div>
 
-            {/* Bottom Link */}
-            <div className="flex justify-center pt-4">
+            {/* Bottom Links */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
                 <Link
                     href="/salesboy/today"
                     className="text-slate-400 hover:text-emerald-500 font-bold uppercase tracking-[0.2em] text-xs transition-colors border-b border-transparent hover:border-emerald-500 pb-1"
                 >
                     View today&apos;s entries
+                </Link>
+                <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-white/10" />
+                <Link
+                    href="/salesboy/history"
+                    className="text-slate-400 hover:text-blue-500 font-bold uppercase tracking-[0.2em] text-xs transition-colors border-b border-transparent hover:border-blue-500 pb-1"
+                >
+                    View performance archive
                 </Link>
             </div>
         </div>

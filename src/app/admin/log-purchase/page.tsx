@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Briefcase, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
+import { ShoppingCart, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Product } from "@/lib/types";
 
-export default function LogCreditPage() {
+export default function LogPurchasePage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -17,15 +18,15 @@ export default function LogCreditPage() {
 
     const [form, setForm] = useState({
         date: new Date().toISOString().split('T')[0],
-        customerName: "",
         product: Product.FLOUR,
         unitType: "Bag",
         quantity: 0,
-        agreedPricePerUnit: 0,
+        purchasePricePerUnit: 0,
+        supplierName: "",
         notes: "",
     });
 
-    const totalAmountOwed = form.quantity * form.agreedPricePerUnit;
+    const totalCost = form.quantity * form.purchasePricePerUnit;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,18 +34,18 @@ export default function LogCreditPage() {
         setError("");
 
         try {
-            const res = await fetch("/api/salesboy/log-credit", {
+            const res = await fetch("/api/admin/log-purchase", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...form, totalAmountOwed }),
+                body: JSON.stringify({ ...form, totalCost }),
             });
 
             if (res.ok) {
                 setSuccess(true);
-                setTimeout(() => router.push("/salesboy/dashboard"), 2000);
+                setTimeout(() => router.push("/admin/dashboard"), 2000);
             } else {
                 const data = await res.json();
-                setError(data.error || "Failed to log credit supply");
+                setError(data.error || "Failed to log purchase");
             }
         } catch (err) {
             setError("A network error occurred");
@@ -56,35 +57,38 @@ export default function LogCreditPage() {
     if (success) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
-                <div className="p-4 rounded-full bg-blue-500/20 text-blue-500 animate-bounce">
+                <div className="p-4 rounded-full bg-amber-500/20 text-amber-500 animate-bounce">
                     <CheckCircle2 size={64} />
                 </div>
-                <h2 className="text-3xl font-black text-white italic">Credit Logged!</h2>
-                <p className="text-slate-400">Redirecting to dashboard...</p>
+                <h2 className="text-3xl font-black text-white italic text-center">Stock Purchase Recorded!</h2>
+                <p className="text-slate-400">Updating inventory and redirecting...</p>
             </div>
         );
     }
 
     return (
         <div className="max-w-2xl mx-auto">
-            <Button
-                variant="ghost"
-                onClick={() => router.back()}
-                className="mb-8 text-slate-400 hover:text-white gap-2 pl-0"
-            >
-                <ArrowLeft size={18} />
-                Back to Dashboard
-            </Button>
+            <Link href="/admin/dashboard">
+                <Button
+                    variant="ghost"
+                    className="mb-8 text-slate-400 hover:text-white gap-2 pl-0"
+                >
+                    <ArrowLeft size={18} />
+                    Back to Dashboard
+                </Button>
+            </Link>
 
             <Card className="glass-panel border-white/5 overflow-hidden">
-                <CardHeader className="bg-blue-500/5 border-b border-white/5 pb-8">
+                <CardHeader className="bg-amber-500/5 border-b border-white/5 pb-8">
                     <div className="flex items-center gap-4 mb-2">
-                        <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500">
-                            <Briefcase size={24} />
+                        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500">
+                            <ShoppingCart size={24} />
                         </div>
                         <div>
-                            <CardTitle className="text-2xl font-black text-white uppercase tracking-tight">Log Credit Supply</CardTitle>
-                            <CardDescription className="text-slate-500 font-medium tracking-wide">Record goods supplied on credit</CardDescription>
+                            <CardTitle className="text-2xl font-black text-white uppercase tracking-tight">Log New Purchase</CardTitle>
+                            <CardDescription className="text-amber-500/80 font-bold tracking-wide italic">
+                                NOTE: Record the purchase price you actually paid, not the selling price.
+                            </CardDescription>
                         </div>
                     </div>
                 </CardHeader>
@@ -92,8 +96,7 @@ export default function LogCreditPage() {
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-6 pt-8">
                         {error && (
-                            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-bold flex items-center gap-3">
-                                <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-bold">
                                 {error}
                             </div>
                         )}
@@ -112,20 +115,19 @@ export default function LogCreditPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Customer Name</Label>
+                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Supplier Name (Optional)</Label>
                                 <Input
-                                    placeholder="Enter customer name"
+                                    placeholder="Enter company/supplier"
                                     className="input-brand outline-none border-none h-12 text-white"
-                                    value={form.customerName}
-                                    onChange={(e) => setForm({ ...form, customerName: e.target.value })}
-                                    required
+                                    value={form.supplierName}
+                                    onChange={(e) => setForm({ ...form, supplierName: e.target.value })}
                                 />
                             </div>
 
                             <div className="space-y-2">
                                 <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Product</Label>
                                 <select
-                                    className="w-full bg-[#0a0f1d] border-none rounded-lg h-12 px-4 text-white focus:ring-2 focus:ring-blue-500/20 outline-none appearance-none font-medium"
+                                    className="w-full bg-[#0a0f1d] border-none rounded-lg h-12 px-4 text-white focus:ring-2 focus:ring-amber-500/20 outline-none appearance-none font-medium"
                                     value={form.product}
                                     onChange={(e) => setForm({ ...form, product: e.target.value as Product })}
                                     required
@@ -137,7 +139,7 @@ export default function LogCreditPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Unit Type</Label>
+                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Unit Type (e.g. Bag)</Label>
                                 <Input
                                     placeholder="Bag"
                                     className="input-brand outline-none border-none h-12 text-white"
@@ -160,30 +162,30 @@ export default function LogCreditPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Agreed Price (₦)</Label>
+                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Purchase Price/Unit (₦) - What we paid</Label>
                                 <Input
                                     type="number"
                                     placeholder="0.00"
                                     className="input-brand outline-none border-none h-12 text-white"
-                                    value={form.agreedPricePerUnit || ""}
-                                    onChange={(e) => setForm({ ...form, agreedPricePerUnit: Number(e.target.value) })}
+                                    value={form.purchasePricePerUnit || ""}
+                                    onChange={(e) => setForm({ ...form, purchasePricePerUnit: Number(e.target.value) })}
                                     required
                                 />
                             </div>
+                        </div>
 
-                            <div className="md:col-span-2 space-y-2">
-                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Total Debt (Calculated)</Label>
-                                <div className="h-12 flex items-center px-4 bg-blue-500/5 text-blue-400 font-black text-xl rounded-lg border border-blue-500/10">
-                                    ₦ {totalAmountOwed.toLocaleString()}
-                                </div>
-                            </div>
+                        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 flex flex-col gap-1">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-amber-500/60">Total Cost (Automated)</Label>
+                            <span className="text-2xl font-black text-amber-500 tracking-tight leading-none group-hover:scale-105 transition-transform">
+                                ₦ {totalCost.toLocaleString()}
+                            </span>
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Notes / Terms</Label>
+                            <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Purchase Notes</Label>
                             <textarea
-                                className="w-full bg-[#0a0f1d] border-none rounded-lg p-4 text-white focus:ring-2 focus:ring-blue-500/20 outline-none font-medium min-h-[100px]"
-                                placeholder="Payment terms or other details..."
+                                className="w-full bg-[#0a0f1d] border-none rounded-lg p-4 text-white focus:ring-2 focus:ring-amber-500/20 outline-none font-medium min-h-[100px]"
+                                placeholder="Any context about this purchase..."
                                 value={form.notes}
                                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
                             />
@@ -194,7 +196,7 @@ export default function LogCreditPage() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="bg-blue-600 hover:bg-blue-500 text-white w-full h-14 text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-500/10 border-none"
+                            className="bg-amber-500 hover:bg-amber-400 text-black w-full h-14 text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-amber-500/10 border-none"
                         >
                             {loading ? (
                                 <div className="flex items-center gap-2">
@@ -202,7 +204,7 @@ export default function LogCreditPage() {
                                     <span>Processing...</span>
                                 </div>
                             ) : (
-                                "Record Credit Supply"
+                                "RECORD PURCHASE"
                             )}
                         </Button>
                     </CardFooter>

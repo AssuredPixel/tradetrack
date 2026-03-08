@@ -105,6 +105,7 @@ export default function LogSalePage() {
                                     className="input-brand outline-none border-none h-12 text-white"
                                     value={form.date}
                                     onChange={(e) => setForm({ ...form, date: e.target.value })}
+                                    max={new Date().toISOString().split('T')[0]}
                                     required
                                 />
                             </div>

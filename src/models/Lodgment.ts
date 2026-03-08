@@ -14,7 +14,7 @@ const LodgmentSchema: Schema = new Schema(
     {
         date: { type: Date, required: true },
         amount: { type: Number, required: true },
-        bankName: { type: String, required: true },
+        bankName: { type: String },
         notes: { type: String },
         submittedBy: { type: String, required: true },
         deletedAt: { type: Date, default: null },

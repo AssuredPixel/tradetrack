@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { Product } from './Sale.js';
+import { Product } from '@/lib/types';
 
 export interface IPurchase extends Document {
     date: Date;
@@ -23,7 +23,7 @@ const PurchaseSchema: Schema = new Schema(
         quantity: { type: Number, required: true },
         purchasePricePerUnit: { type: Number, required: true },
         totalCost: { type: Number, required: true },
-        supplierName: { type: String, required: true },
+        supplierName: { type: String },
         notes: { type: String },
         submittedBy: { type: String, required: true },
         deletedAt: { type: Date, default: null },
