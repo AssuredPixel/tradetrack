@@ -35,6 +35,11 @@ const PurchaseSchema: Schema = new Schema(
     }
 );
 
+PurchaseSchema.index({ date: -1 });
+PurchaseSchema.index({ submittedAt: -1 });
+PurchaseSchema.index({ deletedAt: 1 });
+PurchaseSchema.index({ submittedBy: 1 });
+
 const Purchase: Model<IPurchase> = mongoose.models.Purchase || mongoose.model<IPurchase>('Purchase', PurchaseSchema);
 
 export default Purchase;

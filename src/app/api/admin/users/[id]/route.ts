@@ -4,15 +4,14 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id: userId } = await params;
         const session = await getServerSession(authOptions);
 
         if (!session || (session.user as any).role !== "ADMIN") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
-
-        const userId = params.id;
 
         if (!userId) {
             return NextResponse.json({ error: "User ID is required" }, { status: 400 });

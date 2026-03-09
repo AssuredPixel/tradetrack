@@ -37,6 +37,11 @@ const SaleSchema: Schema = new Schema(
     }
 );
 
+SaleSchema.index({ date: -1 });
+SaleSchema.index({ submittedAt: -1 });
+SaleSchema.index({ deletedAt: 1 });
+SaleSchema.index({ submittedBy: 1 });
+
 const Sale: Model<ISale> = mongoose.models.Sale || mongoose.model<ISale>('Sale', SaleSchema);
 
 export default Sale;

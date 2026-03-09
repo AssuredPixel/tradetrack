@@ -35,6 +35,11 @@ const CreditSupplySchema: Schema = new Schema(
     }
 );
 
+CreditSupplySchema.index({ date: -1 });
+CreditSupplySchema.index({ submittedAt: -1 });
+CreditSupplySchema.index({ deletedAt: 1 });
+CreditSupplySchema.index({ submittedBy: 1 });
+
 const CreditSupply: Model<ICreditSupply> = mongoose.models.CreditSupply || mongoose.model<ICreditSupply>('CreditSupply', CreditSupplySchema);
 
 export default CreditSupply;

@@ -23,11 +23,17 @@ export async function GET(req: Request) {
         const userFilter = url.searchParams.get("user") || "ALL";
         const startDateStr = url.searchParams.get("start");
         const endDateStr = url.searchParams.get("end");
+        const showDeleted = url.searchParams.get("showDeleted") === "true";
+
+        // Pagination logic
+        const page = parseInt(url.searchParams.get("page") || "1");
+        const limit = parseInt(url.searchParams.get("limit") || "50");
+        const fetchAmount = page * limit; // Fetch enough to cover the current page offset globally
 
         await dbConnect();
 
         // Build the base query
-        const baseQuery: any = { deletedAt: null };
+        const baseQuery: any = showDeleted ? {} : { deletedAt: null };
 
         if (startDateStr && endDateStr) {
             baseQuery.date = {
@@ -44,8 +50,6 @@ export async function GET(req: Request) {
             baseQuery.submittedBy = userFilter;
         }
 
-        let allEntries: any[] = [];
-
         // Helper to format documents
         const formatDocs = (docs: any[], type: string) => {
             return docs.map(doc => ({
@@ -54,56 +58,60 @@ export async function GET(req: Request) {
                 date: doc.date,
                 submittedBy: doc.submittedBy,
                 submittedAt: doc.submittedAt,
-                // Map specific fields to a generic format for the table
                 amount: doc.totalAmount || doc.totalCost || doc.amount || doc.totalAmountOwed || doc.amountCollected,
                 product: doc.product || null,
                 quantity: doc.quantity || null,
                 details: doc.customerName || doc.description || doc.supplierName || doc.bankName || null,
                 notes: doc.notes || null,
-                rawDoc: doc // Keep original for debugging or specific details
+                deletedAt: doc.deletedAt || null,
+                rawDoc: doc
             }));
         };
 
-        // Fetch based on type filter
-        if (typeFilter === "ALL" || typeFilter === "SALE") {
-            const sales = await Sale.find(baseQuery).lean();
-            allEntries = [...allEntries, ...formatDocs(sales, "SALE")];
-        }
+        const activeTypes = typeFilter === "ALL"
+            ? ["SALE", "CREDIT_SUPPLY", "EXPENSE", "PURCHASE", "COLLECTION", "LODGMENT"]
+            : [typeFilter];
 
-        if (typeFilter === "ALL" || typeFilter === "CREDIT_SUPPLY") {
-            const credits = await CreditSupply.find(baseQuery).lean();
-            allEntries = [...allEntries, ...formatDocs(credits, "CREDIT_SUPPLY")];
-        }
+        // Fetch limited amount from each collection to merge sort
+        const fetchPromises = [
+            activeTypes.includes("SALE") ? Sale.find(baseQuery).sort({ date: -1, submittedAt: -1 }).limit(fetchAmount).lean() : Promise.resolve([]),
+            activeTypes.includes("CREDIT_SUPPLY") ? CreditSupply.find(baseQuery).sort({ date: -1, submittedAt: -1 }).limit(fetchAmount).lean() : Promise.resolve([]),
+            activeTypes.includes("EXPENSE") ? Expense.find(baseQuery).sort({ date: -1, submittedAt: -1 }).limit(fetchAmount).lean() : Promise.resolve([]),
+            activeTypes.includes("PURCHASE") ? Purchase.find(baseQuery).sort({ date: -1, submittedAt: -1 }).limit(fetchAmount).lean() : Promise.resolve([]),
+            activeTypes.includes("COLLECTION") ? Collection.find(baseQuery).sort({ date: -1, submittedAt: -1 }).limit(fetchAmount).lean() : Promise.resolve([]),
+            activeTypes.includes("LODGMENT") ? Lodgment.find(baseQuery).sort({ date: -1, submittedAt: -1 }).limit(fetchAmount).lean() : Promise.resolve([]),
+        ];
 
-        if (typeFilter === "ALL" || typeFilter === "EXPENSE") {
-            const expenses = await Expense.find(baseQuery).lean();
-            allEntries = [...allEntries, ...formatDocs(expenses, "EXPENSE")];
-        }
+        const [sales, credits, expenses, purchases, collections, lodgments] = await Promise.all(fetchPromises);
 
-        if (typeFilter === "ALL" || typeFilter === "PURCHASE") {
-            const purchases = await Purchase.find(baseQuery).lean();
-            allEntries = [...allEntries, ...formatDocs(purchases, "PURCHASE")];
-        }
+        let mergedEntries: any[] = [
+            ...formatDocs(sales as any[], "SALE"),
+            ...formatDocs(credits as any[], "CREDIT_SUPPLY"),
+            ...formatDocs(expenses as any[], "EXPENSE"),
+            ...formatDocs(purchases as any[], "PURCHASE"),
+            ...formatDocs(collections as any[], "COLLECTION"),
+            ...formatDocs(lodgments as any[], "LODGMENT")
+        ];
 
-        if (typeFilter === "ALL" || typeFilter === "COLLECTION") {
-            const collections = await Collection.find(baseQuery).lean();
-            allEntries = [...allEntries, ...formatDocs(collections, "COLLECTION")];
-        }
+        // Global sort before slicing for pagination
+        mergedEntries.sort((a, b) => {
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+            if (dateA !== dateB) return dateB - dateA;
+            return new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime();
+        });
 
-        if (typeFilter === "ALL" || typeFilter === "LODGMENT") {
-            const lodgments = await Lodgment.find(baseQuery).lean();
-            allEntries = [...allEntries, ...formatDocs(lodgments, "LODGMENT")];
-        }
+        const startIndex = (page - 1) * limit;
+        const pagedEntries = mergedEntries.slice(startIndex, startIndex + limit);
+        const hasMore = mergedEntries.length > startIndex + limit;
 
-        // Sort globally by date descending
-        allEntries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-        // Extract unique users for the filter dropdown
-        const uniqueUsers = Array.from(new Set(allEntries.map(e => e.submittedBy)));
+        // Extract unique users
+        const uniqueUsers = Array.from(new Set(mergedEntries.map(e => e.submittedBy)));
 
         return NextResponse.json({
-            entries: allEntries,
-            users: uniqueUsers
+            entries: pagedEntries,
+            users: uniqueUsers,
+            hasMore
         });
 
     } catch (error) {

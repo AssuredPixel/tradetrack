@@ -26,6 +26,11 @@ const ExpenseSchema: Schema = new Schema(
     }
 );
 
+ExpenseSchema.index({ date: -1 });
+ExpenseSchema.index({ submittedAt: -1 });
+ExpenseSchema.index({ deletedAt: 1 });
+ExpenseSchema.index({ submittedBy: 1 });
+
 const Expense: Model<IExpense> = mongoose.models.Expense || mongoose.model<IExpense>('Expense', ExpenseSchema);
 
 export default Expense;

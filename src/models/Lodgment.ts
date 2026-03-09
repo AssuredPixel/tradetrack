@@ -26,6 +26,11 @@ const LodgmentSchema: Schema = new Schema(
     }
 );
 
+LodgmentSchema.index({ date: -1 });
+LodgmentSchema.index({ submittedAt: -1 });
+LodgmentSchema.index({ deletedAt: 1 });
+LodgmentSchema.index({ submittedBy: 1 });
+
 const Lodgment: Model<ILodgment> = mongoose.models.Lodgment || mongoose.model<ILodgment>('Lodgment', LodgmentSchema);
 
 export default Lodgment;

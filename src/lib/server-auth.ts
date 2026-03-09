@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
-import { Role } from "@/models/User";
+import { Role } from "@/lib/types";
 import { NextResponse } from "next/server";
 
 /**

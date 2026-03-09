@@ -26,6 +26,11 @@ const CollectionSchema: Schema = new Schema(
     }
 );
 
+CollectionSchema.index({ date: -1 });
+CollectionSchema.index({ submittedAt: -1 });
+CollectionSchema.index({ deletedAt: 1 });
+CollectionSchema.index({ submittedBy: 1 });
+
 const Collection: Model<ICollection> = mongoose.models.Collection || mongoose.model<ICollection>('Collection', CollectionSchema);
 
 export default Collection;

@@ -22,6 +22,7 @@ interface Entry {
     quantity?: number;
     details?: string;
     notes?: string;
+    deletedAt?: string;
     rawDoc: any;
 }
 
@@ -38,6 +39,9 @@ export default function OwnerEntriesPage() {
     const [loading, setLoading] = useState(true);
     const [entries, setEntries] = useState<Entry[]>([]);
     const [users, setUsers] = useState<string[]>([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(false);
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
 
     // Filters
     const [typeFilter, setTypeFilter] = useState("ALL");
@@ -45,6 +49,7 @@ export default function OwnerEntriesPage() {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [showDeleted, setShowDeleted] = useState(false);
 
     // Edit/Delete State
     const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
@@ -106,19 +111,33 @@ export default function OwnerEntriesPage() {
         }
     };
 
-    const fetchEntries = async () => {
-        setLoading(true);
+    const fetchEntries = async (isLoadMore = false) => {
+        if (isLoadMore) setIsFetchingMore(true);
+        else setLoading(true);
+
         try {
             const params = new URLSearchParams();
             if (typeFilter !== "ALL") params.append("type", typeFilter);
             if (userFilter !== "ALL") params.append("user", userFilter);
             if (startDate) params.append("start", startDate);
             if (endDate) params.append("end", endDate);
+            if (showDeleted) params.append("showDeleted", "true");
+
+            const currentPage = isLoadMore ? page + 1 : 1;
+            params.append("page", currentPage.toString());
+            params.append("limit", "50");
 
             const res = await fetch(`/api/owner/entries?${params.toString()}`);
             if (res.ok) {
                 const data = await res.json();
-                setEntries(data.entries);
+                if (isLoadMore) {
+                    setEntries(prev => [...prev, ...data.entries]);
+                    setPage(currentPage);
+                } else {
+                    setEntries(data.entries);
+                    setPage(1);
+                }
+                setHasMore(data.hasMore);
                 if (users.length === 0 && data.users) {
                     setUsers(data.users);
                 }
@@ -127,13 +146,14 @@ export default function OwnerEntriesPage() {
             console.error("Failed to fetch entries", error);
         } finally {
             setLoading(false);
+            setIsFetchingMore(false);
         }
     };
 
     // Refetch when filters change (except search which is client-side)
     useEffect(() => {
         fetchEntries();
-    }, [typeFilter, userFilter, startDate, endDate]);
+    }, [typeFilter, userFilter, startDate, endDate, showDeleted]);
 
     const formatCurrency = (amount: number) => `₦${(amount || 0).toLocaleString()}`;
 
@@ -282,9 +302,10 @@ export default function OwnerEntriesPage() {
                                 const config = typeConfig[entry.type];
                                 const Icon = config.icon;
                                 const isDeduction = entry.type === "EXPENSE" || entry.type === "PURCHASE";
+                                const isDeleted = !!entry.deletedAt;
 
                                 return (
-                                    <tr key={entry.id} className="group hover:bg-white/[0.02] transition-colors">
+                                    <tr key={entry.id} className={`group hover:bg-white/[0.02] transition-colors ${isDeleted ? 'opacity-50 grayscale' : ''}`}>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <CalendarDays size={16} className="text-slate-600" />
@@ -303,6 +324,11 @@ export default function OwnerEntriesPage() {
                                                 <span className={`text-[10px] font-bold uppercase tracking-widest ${config.color}`}>
                                                     {config.label}
                                                 </span>
+                                                {isDeleted && (
+                                                    <span className="ml-2 px-2 py-0.5 rounded-sm bg-rose-500/20 text-rose-500 font-bold text-[9px] uppercase tracking-wider">
+                                                        Deleted
+                                                    </span>
+                                                )}
                                             </div>
                                         </td>
 
@@ -348,33 +374,72 @@ export default function OwnerEntriesPage() {
                                         </td>
 
                                         <td className="px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => handleEditClick(entry)}
-                                                    className="w-8 h-8 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
-                                                >
-                                                    <Edit2 size={14} />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => {
-                                                        setDeletingId(entry.id);
-                                                        setDeletingType(entry.type);
-                                                    }}
-                                                    className="w-8 h-8 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                                                >
-                                                    <Trash2 size={14} />
-                                                </Button>
-                                            </div>
+                                            {!isDeleted && (
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => handleEditClick(entry)}
+                                                        className="w-8 h-8 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
+                                                    >
+                                                        <Edit2 size={14} />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => {
+                                                            setDeletingId(entry.id);
+                                                            setDeletingType(entry.type);
+                                                        }}
+                                                        className="w-8 h-8 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </Button>
+                                                </div>
+                                            )}
                                         </td>
                                     </tr>
                                 );
                             })}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {/* Show Deleted Toggle */}
+            <div className="flex items-center justify-end pt-4 pb-8">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                    <span className="text-sm font-medium text-slate-400 group-hover:text-slate-300 transition-colors">Show deleted entries</span>
+                    <div className="relative inline-flex items-center">
+                        <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={showDeleted}
+                            onChange={(e) => setShowDeleted(e.target.checked)}
+                        />
+                        <div className="w-11 h-6 bg-black/40 border border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-400 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500/20 peer-checked:border-rose-500/30 peer-checked:after:bg-rose-500"></div>
+                    </div>
+                </label>
+            </div>
+
+            {/* Load More Button */}
+            {hasMore && (
+                <div className="flex justify-center pt-8">
+                    <Button
+                        onClick={() => fetchEntries(true)}
+                        disabled={isFetchingMore}
+                        variant="outline"
+                        className="h-12 px-8 rounded-xl border-white/10 bg-white/[0.02] text-slate-300 hover:text-white hover:bg-white/5 transition-all min-w-[200px]"
+                    >
+                        {isFetchingMore ? (
+                            <>
+                                <Loader2 className="animate-spin w-4 h-4 mr-2" />
+                                Loading More...
+                            </>
+                        ) : (
+                            "Load More Entries"
+                        )}
+                    </Button>
                 </div>
             )}
 
@@ -588,7 +653,7 @@ export default function OwnerEntriesPage() {
                         <div className="w-16 h-16 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto mb-6">
                             <AlertCircle className="w-8 h-8 text-rose-500" />
                         </div>
-                        <h3 className="text-xl font-black text-white text-center mb-2">Delete this record?</h3>
+                        <h3 className="text-xl font-black text-white text-center mb-2">Are you sure you want to delete this entry? This action will be logged.</h3>
                         <p className="text-sm text-slate-400 text-center mb-8">
                             This action cannot be completely undone. It will be soft-deleted, removed from all financial totals, and recorded in the permanent audit log.
                         </p>
@@ -607,7 +672,7 @@ export default function OwnerEntriesPage() {
                                 onClick={confirmDelete}
                                 disabled={isDeleting}
                             >
-                                {isDeleting ? <Loader2 className="animate-spin w-5 h-5 mx-auto" /> : "Yes, Delete Record"}
+                                {isDeleting ? <Loader2 className="animate-spin w-5 h-5 mx-auto" /> : "Confirm Delete"}
                             </Button>
                         </div>
                     </div>
