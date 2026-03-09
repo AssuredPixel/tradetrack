@@ -51,6 +51,7 @@ const navLinks = {
     ],
     OWNER: [
         { name: "Dashboard", href: "/owner/dashboard", icon: LayoutDashboard },
+        { name: "Reports", href: "/owner/reports", icon: FileText },
         { name: "Starting Capital", href: "/owner/starting-capital", icon: Settings },
         { name: "Revenue", href: "/owner/revenue", icon: Briefcase },
         { name: "Overview", href: "/owner/overview", icon: ShoppingCart },
