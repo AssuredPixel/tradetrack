@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface Entry {
     id: string;
@@ -121,63 +120,38 @@ export default function OwnerEntriesPage() {
 
                 <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                     {/* Record Type Filter */}
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="h-10 border-white/10 bg-black/20 text-slate-300 hover:text-white gap-2">
-                                <Filter size={16} className="text-emerald-500" />
-                                {typeFilter === "ALL" ? "All Types" : typeConfig[typeFilter as keyof typeof typeConfig].label}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-48 bg-[#0f1525] border-white/10 p-2 shadow-2xl">
-                            <div className="space-y-1">
-                                <button
-                                    onClick={() => setTypeFilter("ALL")}
-                                    className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${typeFilter === "ALL" ? "bg-emerald-500/20 text-emerald-400" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}
-                                >
-                                    All Types
-                                </button>
-                                {Object.entries(typeConfig).map(([key, config]) => (
-                                    <button
-                                        key={key}
-                                        onClick={() => setTypeFilter(key)}
-                                        className={`w-full text-left px-3 py-2 rounded-md justify-start flex items-center gap-2 text-sm font-medium transition-colors ${typeFilter === key ? `${config.bg} ${config.color}` : "text-slate-300 hover:bg-white/5 hover:text-white"}`}
-                                    >
-                                        <config.icon size={14} />
-                                        {config.label}
-                                    </button>
-                                ))}
-                            </div>
-                        </PopoverContent>
-                    </Popover>
+                    <div className="relative">
+                        <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 pointer-events-none" />
+                        <select
+                            value={typeFilter}
+                            onChange={(e) => setTypeFilter(e.target.value)}
+                            className="h-10 pl-9 pr-8 rounded-md border border-white/10 bg-black/20 text-slate-300 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 appearance-none cursor-pointer hover:bg-white/5 transition-colors"
+                        >
+                            <option value="ALL" className="bg-[#0f1525] text-white">All Types</option>
+                            {Object.entries(typeConfig).map(([key, config]) => (
+                                <option key={key} value={key} className="bg-[#0f1525] text-white">
+                                    {config.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
                     {/* User Filter */}
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="h-10 border-white/10 bg-black/20 text-slate-300 hover:text-white gap-2">
-                                <User size={16} className="text-emerald-500" />
-                                {userFilter === "ALL" ? "All Users" : userFilter}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-48 bg-[#0f1525] border-white/10 p-2 shadow-2xl">
-                            <div className="space-y-1">
-                                <button
-                                    onClick={() => setUserFilter("ALL")}
-                                    className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${userFilter === "ALL" ? "bg-emerald-500/20 text-emerald-400" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}
-                                >
-                                    All Users
-                                </button>
-                                {users.map(user => (
-                                    <button
-                                        key={user}
-                                        onClick={() => setUserFilter(user)}
-                                        className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${userFilter === user ? "bg-emerald-500/20 text-emerald-400" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}
-                                    >
-                                        {user}
-                                    </button>
-                                ))}
-                            </div>
-                        </PopoverContent>
-                    </Popover>
+                    <div className="relative">
+                        <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 pointer-events-none" />
+                        <select
+                            value={userFilter}
+                            onChange={(e) => setUserFilter(e.target.value)}
+                            className="h-10 pl-9 pr-8 rounded-md border border-white/10 bg-black/20 text-slate-300 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 appearance-none cursor-pointer hover:bg-white/5 transition-colors"
+                        >
+                            <option value="ALL" className="bg-[#0f1525] text-white">All Users</option>
+                            {users.map((u) => (
+                                <option key={u} value={u} className="bg-[#0f1525] text-white">
+                                    {u}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
                     {/* Date Range Filters */}
                     <div className="flex items-center gap-2">
@@ -251,8 +225,8 @@ export default function OwnerEntriesPage() {
                                             <div className="flex items-center gap-3">
                                                 <CalendarDays size={16} className="text-slate-600" />
                                                 <div>
-                                                    <p className="font-bold text-white text-sm">{format(new Date(entry.date), "MMM do, yyyy")}</p>
-                                                    <p className="text-[10px] font-medium text-slate-500 mt-0.5">{format(new Date(entry.date), "EEEE")}</p>
+                                                    <p className="font-bold text-white text-sm">{entry.date ? format(new Date(entry.date), "MMM do, yyyy") : "Unknown"}</p>
+                                                    <p className="text-[10px] font-medium text-slate-500 mt-0.5">{entry.date ? format(new Date(entry.date), "EEEE") : ""}</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -303,7 +277,7 @@ export default function OwnerEntriesPage() {
                                                 <div>
                                                     <p className="text-xs font-bold text-emerald-500">{entry.submittedBy}</p>
                                                     <p className="text-[9px] font-mono text-slate-500 mt-0.5">
-                                                        {format(new Date(entry.submittedAt), "HH:mm")}
+                                                        {entry.submittedAt ? format(new Date(entry.submittedAt), "HH:mm") : "--:--"}
                                                     </p>
                                                 </div>
                                             </div>

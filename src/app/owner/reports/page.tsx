@@ -37,9 +37,9 @@ export default function ReportsNavigationPage() {
             hover: "hover:border-rose-500/50"
         },
         {
-            title: "Credit & Collections",
+            title: "Credit Ledger",
             description: "Monitor outstanding debts and credit recovery progress.",
-            href: "/owner/reports/credit",
+            href: "/owner/reports/credit-ledger",
             icon: CreditCard,
             color: "text-amber-500",
             bg: "bg-amber-500/10",
