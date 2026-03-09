@@ -139,44 +139,49 @@ export default function OwnerDashboard() {
                 </Link>
             </header>
 
-            {/* The 9-Card Grid */}
+            {/* The 5-Card Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                {/* 1. Starting Capital */}
-                <div className="glass-panel p-6 rounded-2xl border-white/5 hover:border-emerald-500/30 transition-colors group">
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="p-2 rounded-lg bg-white/5 text-slate-400 group-hover:text-emerald-500 group-hover:bg-emerald-500/10 transition-colors">
-                            <Briefcase size={20} />
-                        </div>
-                        <span className="px-2 py-0.5 rounded bg-white/10 text-[10px] text-white font-mono">{currentYear} BASELINE</span>
-                    </div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Starting Capital</p>
-                    <h3 className="text-3xl font-black text-white tracking-tighter truncate">{formatCurrency(stats.startingCapital)}</h3>
-                </div>
-
-                {/* 2. Net Profit / Loss */}
-                <div className={`glass-panel p-6 rounded-2xl border relative overflow-hidden group ${isProfit ? 'border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)]' : 'border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.1)]'}`}>
-                    <div className={`absolute top-0 right-0 w-32 h-32 blur-3xl rounded-full ${isProfit ? 'bg-emerald-500/20' : 'bg-rose-500/20'}`} />
-                    <div className="relative z-10">
+                {/* 1. Net Profit / Loss */}
+                <div className={`glass-panel p-6 rounded-2xl border relative overflow-hidden group lg:col-span-2 ${isProfit ? 'border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)]' : 'border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.1)]'}`}>
+                    <div className={`absolute top-0 right-0 w-64 h-64 blur-3xl rounded-full pointer-events-none ${isProfit ? 'bg-emerald-500/20' : 'bg-rose-500/20'}`} />
+                    <div className="relative z-10 flex flex-col justify-between h-full min-h-[160px]">
                         <div className="flex justify-between items-start mb-4">
                             <div className={`p-2 rounded-lg ${isProfit ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
-                                {isProfit ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
+                                {isProfit ? <TrendingUp size={24} /> : <TrendingDown size={24} />}
                             </div>
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${isProfit ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
+                            <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider border ${isProfit ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'}`}>
                                 NET YTD PERFORMANCE
                             </span>
                         </div>
-                        <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${isProfit ? 'text-emerald-500/70' : 'text-rose-500/70'}`}>
-                            Net {isProfit ? 'Profit' : 'Loss'}
-                        </p>
-                        <h3 className={`text-4xl font-black tracking-tighter truncate ${isProfit ? 'text-emerald-400' : 'text-rose-400'}`}>
-                            {isProfit ? '+' : '-'}{formatCurrency(Math.abs(stats.netProfitOrLoss))}
-                        </h3>
+                        <div>
+                            <p className={`text-sm font-bold uppercase tracking-widest mb-2 ${isProfit ? 'text-emerald-500/70' : 'text-rose-500/70'}`}>
+                                Net Full-Year {isProfit ? 'Profit' : 'Loss'}
+                            </p>
+                            <h3 className={`text-6xl font-black tracking-tighter truncate ${isProfit ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                {isProfit ? '+' : '-'}{formatCurrency(Math.abs(stats.netProfitOrLoss))}
+                            </h3>
+                        </div>
                     </div>
                 </div>
 
-                {/* 3. Amount of Goods Bought (formerly Total Capital Deployed) */}
-                <div className="glass-panel p-6 rounded-2xl border-white/5 hover:border-blue-500/30 transition-colors group flex flex-col justify-between h-full min-h-[220px]">
+                {/* 2. Total Sales Revenue (Income - Green) */}
+                <div className="glass-panel p-6 rounded-2xl border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)] relative overflow-hidden group flex flex-col justify-between min-h-[160px]">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none" />
+                    <div className="relative z-10">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
+                                <DollarSign size={20} />
+                            </div>
+                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-[10px] text-emerald-400 font-mono font-bold">YTD INFLOW</span>
+                        </div>
+                        <p className="text-xs font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Total Sales Revenue</p>
+                        <h3 className="text-4xl font-black text-emerald-400 tracking-tighter truncate">{formatCurrency(stats.totalSalesRevenue)}</h3>
+                    </div>
+                </div>
+
+                {/* 3. Amount of Goods Bought */}
+                <div className="glass-panel p-6 rounded-2xl border-white/5 hover:border-blue-500/30 transition-colors group flex flex-col justify-between">
                     <div>
                         <div className="flex justify-between items-start mb-4">
                             <div className="p-2 rounded-lg bg-white/5 text-slate-400 group-hover:text-blue-500 group-hover:bg-blue-500/10 transition-colors shrink-0">
@@ -189,93 +194,25 @@ export default function OwnerDashboard() {
                             {formatCurrency(stats.totalCapitalDeployed)}
                         </h3>
                     </div>
-
-                    {/* Mini inline feed for what was purchased */}
-                    <div className="mt-4 pt-4 border-t border-white/5 space-y-2">
-                        {activities.filter(a => a.type === 'PURCHASE').slice(0, 3).map((purchase) => (
-                            <div key={`mini-${purchase.id}`} className="flex justify-between items-center text-xs">
-                                <span className="text-slate-400 truncate max-w-[120px]">{purchase.description || 'Unknown Product'}</span>
-                                <span className="text-white font-mono">{formatCurrency(purchase.amount)}</span>
-                            </div>
-                        ))}
-                        {activities.filter(a => a.type === 'PURCHASE').length === 0 && (
-                            <p className="text-xs text-slate-500 italic">No purchases logged yet.</p>
-                        )}
-                    </div>
                 </div>
 
-                {/* 4. Total Sales Revenue (Income - Green) */}
-                <div className="glass-panel p-6 rounded-2xl border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)] relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
-                    <div className="relative z-10">
+                {/* 4. Outstanding Credit */}
+                <div className="glass-panel p-6 rounded-2xl border-white/5 hover:border-amber-500/30 transition-colors group flex flex-col justify-between">
+                    <div>
                         <div className="flex justify-between items-start mb-4">
-                            <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
-                                <DollarSign size={20} />
+                            <div className="p-2 rounded-lg bg-white/5 text-slate-400 group-hover:text-amber-500 group-hover:bg-amber-500/10 transition-colors">
+                                <CreditCard size={20} />
                             </div>
-                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-[10px] text-emerald-400 font-mono font-bold">YTD INFLOW</span>
+                            <span className="px-2 py-0.5 rounded bg-amber-500/10 text-[10px] text-amber-500 font-mono">ALL-TIME DEBT</span>
                         </div>
-                        <p className="text-xs font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Total Sales Revenue</p>
-                        <h3 className="text-3xl font-black text-emerald-400 tracking-tighter truncate">{formatCurrency(stats.totalSalesRevenue)}</h3>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Outstanding Credit Owed</p>
+                        <h3 className="text-3xl font-black text-amber-500 tracking-tighter truncate">{formatCurrency(stats.outstandingCredit)}</h3>
                     </div>
                 </div>
 
-                {/* 4. Total Cost of Goods */}
-                <div className="glass-panel p-6 rounded-2xl border-white/5 hover:border-amber-500/30 transition-colors group">
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="p-2 rounded-lg bg-white/5 text-slate-400 group-hover:text-amber-500 group-hover:bg-amber-500/10 transition-colors">
-                            <ShoppingCart size={20} />
-                        </div>
-                        <span className="px-2 py-0.5 rounded bg-white/10 text-[10px] text-slate-400 font-mono">YTD OUTFLOW</span>
-                    </div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Total Cost of Goods (COGS)</p>
-                    <h3 className="text-3xl font-black text-white tracking-tighter truncate">{formatCurrency(stats.totalCOGS)}</h3>
-                </div>
-
-                {/* 6. Total Expenses (Red) */}
-                <div className="glass-panel p-6 rounded-2xl border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.1)] relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 blur-3xl rounded-full" />
-                    <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="p-2 rounded-lg bg-rose-500/20 text-rose-400">
-                                <TrendingDown size={20} />
-                            </div>
-                            <span className="px-2 py-0.5 rounded bg-rose-500/20 text-[10px] text-rose-400 font-mono font-bold">YTD BURN</span>
-                        </div>
-                        <p className="text-xs font-bold text-rose-500/70 uppercase tracking-widest mb-1">Total Operational Expenses</p>
-                        <h3 className="text-3xl font-black text-rose-400 tracking-tighter truncate">{formatCurrency(stats.totalExpenses)}</h3>
-                    </div>
-                </div>
-
-                {/* 7. Outstanding Credit */}
-                <div className="glass-panel p-6 rounded-2xl border-white/5 hover:border-amber-500/30 transition-colors group">
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="p-2 rounded-lg bg-white/5 text-slate-400 group-hover:text-amber-500 group-hover:bg-amber-500/10 transition-colors">
-                            <CreditCard size={20} />
-                        </div>
-                        <span className="px-2 py-0.5 rounded bg-amber-500/10 text-[10px] text-amber-500 font-mono">ALL-TIME DEBT</span>
-                    </div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Outstanding Credit Owed</p>
-                    <h3 className="text-3xl font-black text-amber-500 tracking-tighter truncate">{formatCurrency(stats.outstandingCredit)}</h3>
-                </div>
-
-                {/* 8. Total Credit Collected (Income/Recovery - Green) */}
-                <div className="glass-panel p-6 rounded-2xl border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)] relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
-                    <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
-                                <Wallet size={20} />
-                            </div>
-                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-[10px] text-emerald-400 font-mono font-bold">YTD RECOVERY</span>
-                        </div>
-                        <p className="text-xs font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Total Credit Collected</p>
-                        <h3 className="text-3xl font-black text-emerald-400 tracking-tighter truncate">{formatCurrency(stats.totalCreditCollectedYTD)}</h3>
-                    </div>
-                </div>
-
-                {/* 9. Total Bank Lodgments (Blue) */}
-                <div className="glass-panel p-6 rounded-2xl border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.1)] relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full" />
+                {/* 5. Total Bank Lodgments (Blue) */}
+                <div className="glass-panel p-6 rounded-2xl border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.1)] relative overflow-hidden group flex flex-col justify-between">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full pointer-events-none" />
                     <div className="relative z-10">
                         <div className="flex justify-between items-start mb-4">
                             <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400">
