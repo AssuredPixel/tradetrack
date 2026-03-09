@@ -12,6 +12,7 @@ export interface ICreditSupply extends Document {
     notes?: string;
     submittedBy: string;
     submittedAt: Date;
+    editedAt?: Date;
     deletedAt?: Date;
 }
 
@@ -26,6 +27,7 @@ const CreditSupplySchema: Schema = new Schema(
         totalAmountOwed: { type: Number, required: true },
         notes: { type: String },
         submittedBy: { type: String, required: true },
+        editedAt: { type: Date },
         deletedAt: { type: Date, default: null },
     },
     {

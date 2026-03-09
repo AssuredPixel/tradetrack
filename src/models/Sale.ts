@@ -13,6 +13,7 @@ export interface ISale extends Document {
     notes?: string;
     submittedBy: string;
     submittedAt: Date;
+    editedAt?: Date;
     deletedAt?: Date;
 }
 
@@ -28,6 +29,7 @@ const SaleSchema: Schema = new Schema(
         totalCOGS: { type: Number, default: 0 },        // quantity * costPricePerUnit
         notes: { type: String },
         submittedBy: { type: String, required: true },
+        editedAt: { type: Date },
         deletedAt: { type: Date, default: null },
     },
     {

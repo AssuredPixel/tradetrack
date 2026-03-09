@@ -7,6 +7,7 @@ export interface IExpense extends Document {
     notes?: string;
     submittedBy: string;
     submittedAt: Date;
+    editedAt?: Date;
     deletedAt?: Date;
 }
 
@@ -17,6 +18,7 @@ const ExpenseSchema: Schema = new Schema(
         amount: { type: Number, required: true },
         notes: { type: String },
         submittedBy: { type: String, required: true },
+        editedAt: { type: Date },
         deletedAt: { type: Date, default: null },
     },
     {

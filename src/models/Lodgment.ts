@@ -7,6 +7,7 @@ export interface ILodgment extends Document {
     notes?: string;
     submittedBy: string;
     submittedAt: Date;
+    editedAt?: Date;
     deletedAt?: Date;
 }
 
@@ -17,6 +18,7 @@ const LodgmentSchema: Schema = new Schema(
         bankName: { type: String },
         notes: { type: String },
         submittedBy: { type: String, required: true },
+        editedAt: { type: Date },
         deletedAt: { type: Date, default: null },
     },
     {
