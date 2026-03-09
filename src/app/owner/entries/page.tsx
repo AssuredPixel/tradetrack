@@ -523,9 +523,9 @@ export default function OwnerEntriesPage() {
                                         <Input
                                             type="number"
                                             value={editFormData.amount || editFormData.amountCollected || ""}
-                                            onChange={(e) => setEditFormData(prev => ({
+                                            onChange={(e) => setEditFormData((prev: any) => ({
                                                 ...prev,
-                                                ...(editingEntry.type === "COLLECTION" ? { amountCollected: Number(e.target.value) } : { amount: Number(e.target.value) })
+                                                ...(editingEntry?.type === "COLLECTION" ? { amountCollected: Number(e.target.value) } : { amount: Number(e.target.value) })
                                             }))}
                                             className="h-12 bg-black/20 border-white/10 text-white focus-visible:ring-emerald-500/50 font-mono"
                                         />
