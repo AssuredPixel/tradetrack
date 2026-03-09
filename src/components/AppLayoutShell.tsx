@@ -52,6 +52,7 @@ const navLinks = {
     OWNER: [
         { name: "Dashboard", href: "/owner/dashboard", icon: LayoutDashboard },
         { name: "Reports", href: "/owner/reports", icon: FileText },
+        { name: "All Entries", href: "/owner/entries", icon: History },
         { name: "Starting Capital", href: "/owner/starting-capital", icon: Settings },
     ],
 };
