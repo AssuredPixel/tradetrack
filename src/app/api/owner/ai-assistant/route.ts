@@ -10,7 +10,14 @@ import Expense from "@/models/Expense";
 import CreditSupply from "@/models/CreditSupply";
 import Collection from "@/models/Collection";
 import Lodgment from "@/models/Lodgment";
-import { generateBusinessInsight } from "@/lib/gemini";
+import { generateBusinessInsight } from "@/lib/ai-service";
+
+import { rateLimit } from "@/lib/rate-limiter";
+import { z } from "zod";
+
+const promptSchema = z.object({
+    prompt: z.string().min(1).max(500, "Prompt must be 500 characters or less"),
+});
 
 export async function POST(req: Request) {
     try {
@@ -20,11 +27,23 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { prompt } = await req.json();
-
-        if (!prompt) {
-            return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
+        // Strict rate limit — each request hits a paid external API
+        const ip = req.headers.get("x-forwarded-for") || "anonymous";
+        const rl = rateLimit(ip, { limit: 10, windowMs: 60 * 1000 });
+        if (!rl.success) {
+            return NextResponse.json({ error: "Too many AI requests. Please wait a minute before asking again." }, { status: 429 });
         }
+
+        const body = await req.json();
+        const validation = promptSchema.safeParse(body);
+
+        if (!validation.success) {
+            return NextResponse.json({ 
+                error: validation.error.issues[0].message 
+            }, { status: 400 });
+        }
+
+        const { prompt } = validation.data;
 
         await dbConnect();
 

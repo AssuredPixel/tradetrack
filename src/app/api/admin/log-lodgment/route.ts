@@ -4,6 +4,16 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Lodgment from "@/models/Lodgment";
 
+import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limiter";
+
+const lodgmentSchema = z.object({
+    bankName: z.string().optional(),
+    amount: z.number().positive(),
+    notes: z.string().optional(),
+    date: z.string().refine((val) => !isNaN(Date.parse(val)), "Invalid date"),
+});
+
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
@@ -12,12 +22,24 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const body = await req.json();
-        const { bankName, amount, notes, date } = body;
-
-        if (!amount || !date) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        // Rate limiting for lodgments
+        const ip = req.headers.get("x-forwarded-for") || "anonymous";
+        const rl = rateLimit(ip, { limit: 10, windowMs: 60 * 1000 });
+        if (!rl.success) {
+            return NextResponse.json({ error: "Too many lodgment requests. Please wait a minute." }, { status: 429 });
         }
+
+        const body = await req.json();
+        const validation = lodgmentSchema.safeParse(body);
+
+        if (!validation.success) {
+            return NextResponse.json({ 
+                error: "Validation failed", 
+                details: validation.error.issues.map(e => e.message) 
+            }, { status: 400 });
+        }
+
+        const { bankName, amount, notes, date } = validation.data;
 
         await dbConnect();
 

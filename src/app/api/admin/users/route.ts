@@ -6,7 +6,20 @@ import User from "@/models/User";
 import bcrypt from "bcrypt";
 import { Role } from "@/lib/types";
 
-export async function GET() {
+import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limiter";
+
+const userSchema = z.object({
+    username: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/, "Username must be alphanumeric"),
+    password: z.string()
+        .min(8, "Password must be at least 8 characters")
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .regex(/[0-9]/, "Password must contain at least one number")
+        .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
+    role: z.nativeEnum(Role),
+});
+
+export async function GET(req: Request) {
     try {
         const session = await getServerSession(authOptions);
 
@@ -14,9 +27,15 @@ export async function GET() {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        // Rate limiting for admin list
+        const ip = req.headers.get("x-forwarded-for") || "anonymous";
+        const rl = rateLimit(ip, { limit: 100, windowMs: 60 * 1000 });
+        if (!rl.success) {
+            return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+        }
+
         await dbConnect();
 
-        // Fetch all active users, excluding passwords
         const users = await User.find({ deletedAt: null })
             .select("-password")
             .sort({ submittedAt: -1 });
@@ -36,20 +55,27 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        // Strict rate limiting for user creation
+        const ip = req.headers.get("x-forwarded-for") || "anonymous";
+        const rl = rateLimit(ip, { limit: 5, windowMs: 60 * 1000 });
+        if (!rl.success) {
+            return NextResponse.json({ error: "Too many requests. Please wait before creating more users." }, { status: 429 });
+        }
+
         const body = await req.json();
-        const { username, password, role } = body;
+        const validation = userSchema.safeParse(body);
 
-        if (!username || !password || !role) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        if (!validation.success) {
+            return NextResponse.json({ 
+                error: "Validation failed", 
+                details: validation.error.issues.map(e => e.message) 
+            }, { status: 400 });
         }
 
-        if (!Object.values(Role).includes(role)) {
-            return NextResponse.json({ error: "Invalid role" }, { status: 400 });
-        }
+        const { username, password, role } = validation.data;
 
         await dbConnect();
 
-        // Check if username already exists
         const existingUser = await User.findOne({ username });
         if (existingUser) {
             return NextResponse.json({ error: "Username already exists" }, { status: 400 });

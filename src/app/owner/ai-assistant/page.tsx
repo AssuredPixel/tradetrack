@@ -161,6 +161,24 @@ export default function AIAssistant() {
 
                 {/* Input Area */}
                 <div className="p-6 border-t border-white/5 bg-black/40 backdrop-blur-xl">
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        {[
+                            "How much profit did we make this month",
+                            "Who owes us money and how much in total",
+                            "What were our total expenses this year",
+                            "How many bags of flour did we buy this year",
+                            "How much did we start this year with"
+                        ].map((q, idx) => (
+                            <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setInput(q)}
+                                className="px-3 py-1.5 rounded-full bg-white/5 border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/10 text-[11px] text-slate-400 hover:text-indigo-400 transition-all font-medium"
+                            >
+                                {q}
+                            </button>
+                        ))}
+                    </div>
                     <form 
                         onSubmit={(e) => {
                             e.preventDefault();

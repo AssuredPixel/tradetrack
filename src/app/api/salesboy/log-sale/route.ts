@@ -5,6 +5,19 @@ import dbConnect from "@/lib/db";
 import Sale from "@/models/Sale";
 import Purchase from "@/models/Purchase";
 
+import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limiter";
+
+const saleSchema = z.object({
+    product: z.string().min(1),
+    unitType: z.string().min(1),
+    quantity: z.number().int().positive(),
+    sellingPricePerUnit: z.number().positive(),
+    totalAmount: z.number().positive(),
+    notes: z.string().optional(),
+    date: z.string().refine((val) => !isNaN(Date.parse(val)), "Invalid date"),
+});
+
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
@@ -13,19 +26,28 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const body = await req.json();
-        const { product, unitType, quantity, sellingPricePerUnit, totalAmount, notes, date } = body;
-
-        if (!product || !unitType || !quantity || !sellingPricePerUnit || !totalAmount || !date) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        // Rate limiting for transactions
+        const ip = req.headers.get("x-forwarded-for") || "anonymous";
+        const rl = rateLimit(ip, { limit: 30, windowMs: 60 * 1000 });
+        if (!rl.success) {
+            return NextResponse.json({ error: "Transaction limit reached. Please wait a minute." }, { status: 429 });
         }
+
+        const body = await req.json();
+        const validation = saleSchema.safeParse(body);
+
+        if (!validation.success) {
+            return NextResponse.json({ 
+                error: "Validation failed", 
+                details: validation.error.issues.map(e => e.message) 
+            }, { status: 400 });
+        }
+
+        const { product, unitType, quantity, sellingPricePerUnit, totalAmount, notes, date } = validation.data;
 
         await dbConnect();
 
         // --- FIFO Cost Price Lookup ---
-        // Find the most recent Purchase for this product to snapshot the current cost price.
-        // This is set by the Junior Brother (Admin) when restocking. The Salesboy does NOT
-        // need to know or input this — it's automatic.
         const latestPurchase = await Purchase.findOne(
             { product, deletedAt: null },
             { purchasePricePerUnit: 1 }
@@ -41,8 +63,8 @@ export async function POST(req: Request) {
             quantity,
             sellingPricePerUnit,
             totalAmount,
-            costPricePerUnit,  // Snapshotted from latest Purchase at time of sale
-            totalCOGS,         // Exact COGS for this sale transaction
+            costPricePerUnit,
+            totalCOGS,
             notes,
             submittedBy: (session.user as any).username,
         });

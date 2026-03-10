@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import {
     Briefcase, Loader2, TrendingUp, TrendingDown,
     ArrowRight, DollarSign, PackageOpen, CreditCard,
-    Landmark, Wallet, Activity, ShoppingCart
+    Landmark, Wallet, Activity, ShoppingCart,
+    Sparkles
 } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -132,11 +133,19 @@ export default function OwnerDashboard() {
                         <p className="text-slate-400 text-sm font-medium">Real-time financial aggregation for {currentYear}</p>
                     </div>
                 </div>
-                <Link href="/owner/starting-capital">
-                    <Button variant="outline" className="border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-500 transition-colors uppercase tracking-widest text-xs font-bold font-mono">
-                        View Blueprint
-                    </Button>
-                </Link>
+                <div className="flex items-center gap-3">
+                    <Link href="/owner/ai-assistant">
+                        <Button variant="outline" className="border-indigo-500/30 bg-indigo-500/5 text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 transition-all uppercase tracking-widest text-[10px] font-black font-mono px-4 h-9 flex items-center gap-2">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            Consult AI
+                        </Button>
+                    </Link>
+                    <Link href="/owner/starting-capital">
+                        <Button variant="outline" className="border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-500 transition-colors uppercase tracking-widest text-[10px] font-bold font-mono px-4 h-9">
+                            View Blueprint
+                        </Button>
+                    </Link>
+                </div>
             </header>
 
             {/* The 5-Card Grid */}

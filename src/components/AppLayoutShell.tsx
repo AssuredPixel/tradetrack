@@ -20,7 +20,8 @@ import {
     History,
     User as UserIcon,
     Briefcase,
-    Receipt
+    Receipt,
+    Sparkles
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,7 @@ const navLinks = {
     ],
     OWNER: [
         { name: "Dashboard", href: "/owner/dashboard", icon: LayoutDashboard },
+        { name: "AI Assistant", href: "/owner/ai-assistant", icon: Sparkles },
         { name: "Reports", href: "/owner/reports", icon: FileText },
         { name: "All Entries", href: "/owner/entries", icon: History },
         { name: "Starting Capital", href: "/owner/starting-capital", icon: Settings },

@@ -10,12 +10,21 @@ import Collection from "@/models/Collection";
 import Lodgment from "@/models/Lodgment";
 import { endOfDay, startOfDay } from "date-fns";
 
+import { rateLimit } from "@/lib/rate-limiter";
+
 export async function GET(req: Request) {
     try {
         const session = await getServerSession(authOptions);
 
         if (!session || (session.user as any).role !== "OWNER") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        // Rate limiting for history browsing
+        const ip = req.headers.get("x-forwarded-for") || "anonymous";
+        const rl = rateLimit(ip, { limit: 60, windowMs: 60 * 1000 });
+        if (!rl.success) {
+            return NextResponse.json({ error: "Too many history requests" }, { status: 429 });
         }
 
         const url = new URL(req.url);
@@ -25,10 +34,12 @@ export async function GET(req: Request) {
         const endDateStr = url.searchParams.get("end");
         const showDeleted = url.searchParams.get("showDeleted") === "true";
 
-        // Pagination logic
-        const page = parseInt(url.searchParams.get("page") || "1");
-        const limit = parseInt(url.searchParams.get("limit") || "50");
-        const fetchAmount = page * limit; // Fetch enough to cover the current page offset globally
+        // Pagination hardening - prevent OOM by clamping values
+        const page = Math.min(Math.max(parseInt(url.searchParams.get("page") || "1"), 1), 1000);
+        const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "50"), 1), 100);
+        
+        // This is still a bit expensive but now capped at 100,000 items total (1000 * 100)
+        const fetchAmount = page * limit; 
 
         await dbConnect();
 

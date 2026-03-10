@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import dbConnect from "./db";
 import User from "@/models/User";
 import bcrypt from "bcrypt";
+import AuditLog from "@/models/AuditLog";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -23,7 +24,13 @@ export const authOptions: NextAuthOptions = {
                     const user = await User.findOne({ username: credentials.username });
 
                     if (!user || user.deletedAt) {
-                        console.log(`Auth failed: User not found or deleted - ${credentials.username}`);
+                        await AuditLog.create({
+                            action: "LOGIN_FAILED",
+                            table: "User",
+                            recordId: "N/A",
+                            performedBy: credentials.username,
+                            details: "User not found or deactivated",
+                        });
                         throw new Error("Incorrect username or password");
                     }
 
@@ -33,11 +40,23 @@ export const authOptions: NextAuthOptions = {
                     );
 
                     if (!isPasswordValid) {
-                        console.log(`Auth failed: Invalid password for user - ${credentials.username}`);
+                        await AuditLog.create({
+                            action: "LOGIN_FAILED",
+                            table: "User",
+                            recordId: user._id.toString(),
+                            performedBy: credentials.username,
+                            details: "Invalid password",
+                        });
                         throw new Error("Incorrect username or password");
                     }
 
-                    console.log(`Auth success: ${user.username} (${user.role})`);
+                    await AuditLog.create({
+                        action: "LOGIN_SUCCESS",
+                        table: "User",
+                        recordId: user._id.toString(),
+                        performedBy: user.username,
+                        details: `Role: ${user.role}`,
+                    });
                     return {
                         id: user._id.toString(),
                         username: user.username,
