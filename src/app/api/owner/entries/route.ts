@@ -9,7 +9,6 @@ import CreditSupply from "@/models/CreditSupply";
 import Collection from "@/models/Collection";
 import Lodgment from "@/models/Lodgment";
 import { endOfDay, startOfDay } from "date-fns";
-
 import { rateLimit } from "@/lib/rate-limiter";
 
 export async function GET(req: Request) {
@@ -38,7 +37,6 @@ export async function GET(req: Request) {
         const page = Math.min(Math.max(parseInt(url.searchParams.get("page") || "1"), 1), 1000);
         const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "50"), 1), 100);
         
-        // This is still a bit expensive but now capped at 100,000 items total (1000 * 100)
         const fetchAmount = page * limit; 
 
         await dbConnect();

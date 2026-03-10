@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import dbConnect from "./db";
 import User from "@/models/User";
 import bcrypt from "bcrypt";
-import AuditLog from "@/models/AuditLog";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -24,13 +23,16 @@ export const authOptions: NextAuthOptions = {
                     const user = await User.findOne({ username: credentials.username });
 
                     if (!user || user.deletedAt) {
-                        await AuditLog.create({
-                            action: "LOGIN_FAILED",
-                            table: "User",
-                            recordId: "N/A",
-                            performedBy: credentials.username,
-                            details: "User not found or deactivated",
-                        });
+                        try {
+                            const AuditLog = (await import("@/models/AuditLog")).default;
+                            await AuditLog.create({
+                                action: "LOGIN_FAILED",
+                                table: "User",
+                                recordId: "N/A",
+                                performedBy: credentials.username,
+                                details: "User not found or deactivated",
+                            });
+                        } catch (logErr) { console.error("Audit log error:", logErr); }
                         throw new Error("Incorrect username or password");
                     }
 
@@ -40,23 +42,29 @@ export const authOptions: NextAuthOptions = {
                     );
 
                     if (!isPasswordValid) {
-                        await AuditLog.create({
-                            action: "LOGIN_FAILED",
-                            table: "User",
-                            recordId: user._id.toString(),
-                            performedBy: credentials.username,
-                            details: "Invalid password",
-                        });
+                        try {
+                            const AuditLog = (await import("@/models/AuditLog")).default;
+                            await AuditLog.create({
+                                action: "LOGIN_FAILED",
+                                table: "User",
+                                recordId: user._id.toString(),
+                                performedBy: credentials.username,
+                                details: "Invalid password",
+                            });
+                        } catch (logErr) { console.error("Audit log error:", logErr); }
                         throw new Error("Incorrect username or password");
                     }
 
-                    await AuditLog.create({
-                        action: "LOGIN_SUCCESS",
-                        table: "User",
-                        recordId: user._id.toString(),
-                        performedBy: user.username,
-                        details: `Role: ${user.role}`,
-                    });
+                    try {
+                        const AuditLog = (await import("@/models/AuditLog")).default;
+                        await AuditLog.create({
+                            action: "LOGIN_SUCCESS",
+                            table: "User",
+                            recordId: user._id.toString(),
+                            performedBy: user.username,
+                            details: `Role: ${user.role}`,
+                        });
+                    } catch (logErr) { console.error("Audit log error:", logErr); }
                     return {
                         id: user._id.toString(),
                         username: user.username,

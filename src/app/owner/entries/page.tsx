@@ -38,6 +38,7 @@ const typeConfig = {
 export default function OwnerEntriesPage() {
     const [loading, setLoading] = useState(true);
     const [entries, setEntries] = useState<Entry[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [users, setUsers] = useState<string[]>([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
@@ -113,7 +114,13 @@ export default function OwnerEntriesPage() {
 
     const fetchEntries = async (isLoadMore = false) => {
         if (isLoadMore) setIsFetchingMore(true);
-        else setLoading(true);
+        else {
+            setLoading(true);
+            setError(null);
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
         try {
             const params = new URLSearchParams();
@@ -127,23 +134,38 @@ export default function OwnerEntriesPage() {
             params.append("page", currentPage.toString());
             params.append("limit", "50");
 
-            const res = await fetch(`/api/owner/entries?${params.toString()}`);
-            if (res.ok) {
-                const data = await res.json();
-                if (isLoadMore) {
-                    setEntries(prev => [...prev, ...data.entries]);
-                    setPage(currentPage);
-                } else {
-                    setEntries(data.entries);
-                    setPage(1);
-                }
-                setHasMore(data.hasMore);
-                if (users.length === 0 && data.users) {
-                    setUsers(data.users);
-                }
+            const res = await fetch(`/api/owner/entries?${params.toString()}`, {
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                setError(errData.error || `Request failed (${res.status})`);
+                return;
             }
-        } catch (error) {
-            console.error("Failed to fetch entries", error);
+
+            const data = await res.json();
+            if (isLoadMore) {
+                setEntries(prev => [...prev, ...data.entries]);
+                setPage(currentPage);
+            } else {
+                setEntries(data.entries ?? []);
+                setPage(1);
+            }
+            setHasMore(data.hasMore ?? false);
+            if (users.length === 0 && data.users) {
+                setUsers(data.users);
+            }
+        } catch (err: any) {
+            clearTimeout(timeoutId);
+            if (err.name === "AbortError") {
+                setError("Request timed out after 15 seconds. The server may be overloaded or the database connection is slow. Please try again.");
+            } else {
+                console.error("Failed to fetch entries", err);
+                setError("Could not connect to the server. Please refresh the page.");
+            }
         } finally {
             setLoading(false);
             setIsFetchingMore(false);
@@ -277,6 +299,15 @@ export default function OwnerEntriesPage() {
                 <div className="flex flex-col items-center justify-center min-h-[40vh] space-y-4">
                     <Loader2 className="animate-spin w-10 h-10 text-emerald-500" />
                     <p className="text-slate-400 font-medium uppercase tracking-widest text-sm">Querying Global Ledger...</p>
+                </div>
+            ) : error ? (
+                <div className="p-16 rounded-2xl border border-dashed border-rose-500/20 text-center bg-rose-500/[0.03]">
+                    <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
+                    <p className="text-rose-400 font-bold text-lg">Failed to load entries</p>
+                    <p className="text-slate-500 text-sm mt-1 mb-6">{error}</p>
+                    <Button onClick={() => fetchEntries()} variant="outline" className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10">
+                        Try Again
+                    </Button>
                 </div>
             ) : filteredEntries.length === 0 ? (
                 <div className="p-16 rounded-2xl border border-dashed border-white/10 text-center bg-white/[0.02]">
