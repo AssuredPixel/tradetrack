@@ -13,13 +13,7 @@ interface Message {
     content: string;
 }
 
-const SUGGESTED_QUESTIONS = [
-    "What was my total profit this year?",
-    "How much did I spend on expenses last month?",
-    "Show me my recent sales breakdown.",
-    "What is my current outstanding credit?",
-    "Analyze my business performance YTD."
-];
+
 
 export default function AIAssistant() {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -101,20 +95,6 @@ export default function AIAssistant() {
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
-                            {SUGGESTED_QUESTIONS.map((q, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => handleSendMessage(q)}
-                                    className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/30 hover:bg-white/10 transition-all text-left group"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <MessageSquare className="w-4 h-4 text-slate-500 group-hover:text-indigo-500" />
-                                        <span className="text-sm text-slate-300 group-hover:text-white font-medium">{q}</span>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
                     </div>
                 )}
 
