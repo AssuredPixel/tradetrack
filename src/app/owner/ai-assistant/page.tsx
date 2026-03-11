@@ -64,7 +64,7 @@ export default function AIAssistant() {
     };
 
     return (
-        <div className="max-w-[1000px] mx-auto h-[calc(100vh-180px)] flex flex-col space-y-6 pb-8">
+        <div className="max-w-[1000px] mx-auto h-[calc(100dvh-100px)] md:h-[calc(100vh-180px)] flex flex-col space-y-4 md:space-y-6 pb-2 md:pb-8">
             {/* Header */}
             <header className="flex items-center justify-between pb-6 border-b border-white/5">
                 <div className="flex items-center gap-3">
@@ -89,7 +89,7 @@ export default function AIAssistant() {
             {/* Chat Container */}
             <div className="flex-1 glass-panel rounded-2xl border border-white/5 overflow-hidden flex flex-col relative">
                 {messages.length === 0 && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center space-y-8 z-0">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-8 text-center space-y-6 z-0 overflow-y-auto pt-10 pb-32">
                         <div className="w-20 h-20 rounded-3xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 animate-bounce">
                             <Sparkles className="w-10 h-10 text-indigo-500" />
                         </div>
@@ -160,8 +160,8 @@ export default function AIAssistant() {
                 </div>
 
                 {/* Input Area */}
-                <div className="p-6 border-t border-white/5 bg-black/40 backdrop-blur-xl">
-                    <div className="flex flex-wrap gap-2 mb-4">
+                <div className="p-4 md:p-6 border-t border-white/5 bg-black/40 backdrop-blur-xl shrink-0 z-10 w-full">
+                    <div className="flex overflow-x-auto gap-2 mb-4 pb-2 no-scrollbar shrink-0">
                         {[
                             "How much profit did we make this month",
                             "Who owes us money and how much in total",
@@ -173,7 +173,7 @@ export default function AIAssistant() {
                                 key={idx}
                                 type="button"
                                 onClick={() => setInput(q)}
-                                className="px-3 py-1.5 rounded-full bg-white/5 border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/10 text-[11px] text-slate-400 hover:text-indigo-400 transition-all font-medium"
+                                className="shrink-0 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/10 text-[11px] text-slate-400 hover:text-indigo-400 transition-all font-medium whitespace-nowrap"
                             >
                                 {q}
                             </button>

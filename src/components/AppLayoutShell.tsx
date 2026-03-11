@@ -47,7 +47,6 @@ const navLinks = {
         { name: "Log Lodgment", href: "/admin/log-lodgment", icon: Banknote },
         { name: "Today's Entries", href: "/admin/today", icon: FileText },
         { name: "Audit Logs", href: "/admin/logs", icon: History },
-        { name: "Manage Users", href: "/admin/users", icon: Users },
         { name: "Settings", href: "/admin/settings", icon: Settings },
     ],
     OWNER: [
@@ -55,7 +54,10 @@ const navLinks = {
         { name: "AI Assistant", href: "/owner/ai-assistant", icon: Sparkles },
         { name: "Reports", href: "/owner/reports", icon: FileText },
         { name: "All Entries", href: "/owner/entries", icon: History },
-        { name: "Starting Capital", href: "/owner/starting-capital", icon: Settings },
+        { name: "Starting Capital", href: "/owner/starting-capital", icon: Banknote },
+        { name: "Manage Users", href: "/owner/users", icon: Users },
+        { name: "Audit Logs", href: "/owner/logs", icon: History },
+        { name: "Settings", href: "/owner/settings", icon: Settings },
     ],
 };
 
