@@ -158,7 +158,7 @@ export default function OwnerDashboard() {
                             <div className={`p-2 rounded-lg ${isProfit ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
                                 {isProfit ? <TrendingUp size={24} /> : <TrendingDown size={24} />}
                             </div>
-                            <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider border ${isProfit ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'}`}>
+                            <span className={`hidden md:inline-block px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider border ${isProfit ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'}`}>
                                 NET YTD PERFORMANCE
                             </span>
                         </div>
@@ -166,8 +166,8 @@ export default function OwnerDashboard() {
                             <p className={`text-sm font-bold uppercase tracking-widest mb-2 ${isProfit ? 'text-emerald-500/70' : 'text-rose-500/70'}`}>
                                 Net Full-Year {isProfit ? 'Profit' : 'Loss'}
                             </p>
-                            <h3 className={`text-6xl font-black tracking-tighter truncate ${isProfit ? 'text-emerald-400' : 'text-rose-400'}`}>
-                                {isProfit ? '+' : '-'}{formatCurrency(Math.abs(stats.netProfitOrLoss))}
+                            <h3 className={`text-5xl md:text-6xl font-black truncate ${isProfit ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                {isProfit ? '+ ' : '- '}{formatCurrency(Math.abs(stats.netProfitOrLoss))}
                             </h3>
                         </div>
                     </div>

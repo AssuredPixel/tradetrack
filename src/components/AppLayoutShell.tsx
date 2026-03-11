@@ -56,7 +56,6 @@ const navLinks = {
         { name: "All Entries", href: "/owner/entries", icon: History },
         { name: "Starting Capital", href: "/owner/starting-capital", icon: Banknote },
         { name: "Manage Users", href: "/owner/users", icon: Users },
-        { name: "Audit Logs", href: "/owner/logs", icon: History },
         { name: "Settings", href: "/owner/settings", icon: Settings },
     ],
 };
