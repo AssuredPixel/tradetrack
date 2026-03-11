@@ -53,4 +53,4 @@ next-panic-*.log
 
 # custom logs
 *.log
-logs/
+/logs/
