@@ -80,7 +80,6 @@ export default function OwnerDashboard() {
                 const data = JSON.parse(event.data);
                 if (data.type === 'refresh') {
                     // Database change detected globally. Silently fetch the latest metrics.
-                    console.log("Real-time pulse received: Hot-swapping dashboard data...");
                     fetchDashboardData();
                 }
             } catch (e) {

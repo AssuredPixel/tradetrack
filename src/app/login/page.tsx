@@ -60,8 +60,8 @@ export default function LoginPage() {
                 <Card className="glass-panel border-white/5 shadow-2xl overflow-hidden">
                     <CardHeader className="space-y-1 pt-8 pb-6 border-b border-white/5">
                         <div className="flex items-center justify-center gap-3 mb-2">
-                            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                                <ShieldCheck className="w-6 h-6 text-emerald-500" />
+                            <div className="p-2 rounded-xl bg-emerald-500/5 border border-white/5 shadow-inner">
+                                <img src="/logo.png" alt="TradeTrack Logo" className="w-10 h-10 object-contain" />
                             </div>
                             <CardTitle className="text-3xl font-bold tracking-tight text-white italic">
                                 Trade<span className="text-emerald-500 not-italic">Track</span>

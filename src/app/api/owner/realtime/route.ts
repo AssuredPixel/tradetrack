@@ -51,12 +51,10 @@ export async function GET(req: Request) {
 
                 streams.forEach(stream => {
                     stream.on('change', () => {
-                        console.log("Realtime: Database Change Detected. Instructing owner dashboard to fetch.");
                         pushData();
                     });
 
                     stream.on('error', (err) => {
-                        console.log("Realtime: Change stream warning (likely local standalone env):", err.message);
                         // Do not crash the connection
                     });
                 });

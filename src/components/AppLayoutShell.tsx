@@ -102,8 +102,8 @@ export default function AppLayoutShell({
                     {/* Brand */}
                     <div className="p-6 border-b border-white/5 mb-6">
                         <Link href={`/${role.toLowerCase()}/dashboard`} className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                                <RoleIcon className="w-5 h-5 text-emerald-500" />
+                            <div className="p-1.5 rounded-lg bg-emerald-500/5 border border-white/5">
+                                <img src="/logo.png" alt="TradeTrack Logo" className="w-7 h-7 object-contain" />
                             </div>
                             <span className="text-xl font-bold tracking-tight text-white italic">
                                 Trade<span className="text-emerald-500 not-italic">Track</span>
