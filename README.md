@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TradeTrack 📈
 
-## Getting Started
+TradeTrack is a premium, high-performance business management and trade tracking application designed for modern commerce. Built with a focus on speed, reliability, and ease of use, it empowers business owners and administrators to track sales, manage inventory, and monitor financial health in real-time.
 
-First, run the development server:
+---
 
+## 🚀 Key Features
+
+### 📦 Inventory & Purchase Management
+- **FIFO Costing Engine**: Accurate Cost of Goods Sold (COGS) calculation using First-In-First-Out logic.
+- **Purchase Tracking**: Log and monitor stock acquisitions with detailed unit pricing.
+- **Stock Monitoring**: Real-time visibility into inventory levels.
+
+### 💰 Financial Operations
+- **Sales Logging**: Streamlined interface for recording daily transactions.
+- **Expense Tracking**: Categorize and monitor business expenditures.
+- **Credit & Supply**: Manage debtor records and credit-based supply chains.
+- **Lodgments**: Track bank deposits and cash handling.
+- **Starting Capital**: Record and track initial business investments.
+
+### 📊 Reporting & Analytics
+- **Dynamic Dashboards**: Visual summaries of sales, profits, and expenses.
+- **Audit Logs**: Comprehensive tracking of all system actions for transparency and security.
+- **Periodic Selection**: Choose custom date ranges for financial reports.
+
+### 🛡️ Role-Based Access Control (RBAC)
+- **Admin**: Full system control and user management.
+- **Owner**: Comprehensive business oversight and financial reporting.
+- **Salesboy**: Focused interface for daily sales logging and basic operations.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: [Next.js 15](https://nextjs.org/) (App Router), [React 19](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Radix UI](https://www.radix-ui.com/), [Lucide Icons](https://lucide.dev/)
+- **Backend / Database**: [MongoDB](https://www.mongodb.com/) via [Mongoose](https://mongoosejs.com/)
+- **Authentication**: [NextAuth.js](https://next-auth.js.org/)
+- **Validation**: [Zod](https://zod.dev/)
+- **Date Handling**: [date-fns](https://date-fns.org/)
+
+---
+
+## ⚙️ Getting Started
+
+### Prerequisites
+
+- Node.js (v18+ recommended)
+- MongoDB instance (local or Atlas)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd tracktrade-project/tradetrack
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variables:
+   - Create a `.env` file in the root directory.
+   - Use `.env.example` as a template:
+     ```bash
+     cp .env.example .env
+     ```
+   - Fill in your `MONGODB_URI`, `NEXTAUTH_SECRET`, and other required variables.
+
+### Development
+
+Run the development server:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📂 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/src/app`: Next.js pages and API routes.
+- `/src/components`: Reusable UI components.
+- `/src/models`: Mongoose schemas for data entities.
+- `/src/lib`: Shared utilities, database connection, and authentication logic.
+- `/src/scripts`: Maintenance and initialization scripts (e.g., seeding).
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🌐 Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+TradeTrack is optimized for deployment on [Vercel](https://vercel.com). Ensure all environment variables are correctly configured in your Vercel project settings.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📄 License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private - All rights reserved.
