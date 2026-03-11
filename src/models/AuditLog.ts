@@ -26,6 +26,11 @@ const AuditLogSchema: Schema = new Schema(
     }
 );
 
+AuditLogSchema.index({ action: 1 });
+AuditLogSchema.index({ table: 1 });
+AuditLogSchema.index({ performedAt: -1 });
+AuditLogSchema.index({ submittedAt: -1 });
+
 const AuditLog: Model<IAuditLog> = mongoose.models.AuditLog || mongoose.model<IAuditLog>('AuditLog', AuditLogSchema);
 
 export default AuditLog;
