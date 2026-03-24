@@ -11,7 +11,7 @@ import { rateLimit } from "@/lib/rate-limiter";
 const saleSchema = z.object({
     product: z.string().min(1),
     unitType: z.string().min(1),
-    quantity: z.number().int().positive(),
+    quantity: z.number().positive(),
     sellingPricePerUnit: z.number().positive(),
     totalAmount: z.number().positive(),
     notes: z.string().optional(),

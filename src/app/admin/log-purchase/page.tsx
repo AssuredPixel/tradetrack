@@ -151,14 +151,16 @@ export default function LogPurchasePage() {
 
                             <div className="space-y-2">
                                 <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Quantity</Label>
-                                <Input
-                                    type="number"
-                                    placeholder="0"
-                                    className="input-brand outline-none border-none h-12 text-white"
+                                <select
+                                    className="w-full bg-[#0a0f1d] border-none rounded-lg h-12 px-4 text-white focus:ring-2 focus:ring-amber-500/20 outline-none appearance-none font-medium"
                                     value={form.quantity || ""}
                                     onChange={(e) => setForm({ ...form, quantity: Number(e.target.value) })}
                                     required
-                                />
+                                >
+                                    <option value="" disabled>Select Quantity</option>
+                                    <option value={1}>50kg (Full Bag)</option>
+                                    <option value={0.5}>25kg (Half Bag)</option>
+                                </select>
                             </div>
 
                             <div className="space-y-2">
