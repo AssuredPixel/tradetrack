@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-    Briefcase, Loader2, TrendingUp, TrendingDown,
+    Briefcase, Loader2,
     ArrowRight, DollarSign, PackageOpen, CreditCard,
     Landmark, Wallet, Activity, ShoppingCart,
     Sparkles
@@ -25,6 +25,7 @@ interface DashboardStats {
     startingCapital: number;
     totalCapitalDeployed: number;
     totalSalesRevenue: number;
+    totalSalesToday: number;
     totalCOGS: number;
     totalExpenses: number;
     netProfitOrLoss: number;
@@ -114,8 +115,6 @@ export default function OwnerDashboard() {
         return `₦${(amount || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
     };
 
-    const isProfit = stats.netProfitOrLoss >= 0;
-
     return (
         <div className="max-w-[1400px] mx-auto space-y-8 pb-12">
 
@@ -147,44 +146,21 @@ export default function OwnerDashboard() {
                 </div>
             </header>
 
-            {/* The 5-Card Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* The 4-Card Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                {/* 1. Net Profit / Loss */}
-                <div className={`glass-panel p-6 rounded-2xl border relative overflow-hidden group lg:col-span-2 ${isProfit ? 'border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)]' : 'border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.1)]'}`}>
-                    <div className={`absolute top-0 right-0 w-64 h-64 blur-3xl rounded-full pointer-events-none ${isProfit ? 'bg-emerald-500/20' : 'bg-rose-500/20'}`} />
-                    <div className="relative z-10 flex flex-col justify-between h-full min-h-[160px]">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className={`p-2 rounded-lg ${isProfit ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
-                                {isProfit ? <TrendingUp size={24} /> : <TrendingDown size={24} />}
-                            </div>
-                            <span className={`hidden md:inline-block px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider border ${isProfit ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'}`}>
-                                NET YTD PERFORMANCE
-                            </span>
-                        </div>
-                        <div>
-                            <p className={`text-sm font-bold uppercase tracking-widest mb-2 ${isProfit ? 'text-emerald-500/70' : 'text-rose-500/70'}`}>
-                                Net Full-Year {isProfit ? 'Profit' : 'Loss'}
-                            </p>
-                            <h3 className={`text-5xl md:text-6xl font-black truncate ${isProfit ? 'text-emerald-400' : 'text-rose-400'}`}>
-                                {isProfit ? '+ ' : '- '}{formatCurrency(Math.abs(stats.netProfitOrLoss))}
-                            </h3>
-                        </div>
-                    </div>
-                </div>
-
-                {/* 2. Total Sales Revenue (Income - Green) */}
-                <div className="glass-panel p-6 rounded-2xl border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)] relative overflow-hidden group flex flex-col justify-between min-h-[160px]">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none" />
+                {/* 1. Total Sales Today (resets daily) */}
+                <div className="glass-panel p-6 rounded-2xl border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)] relative overflow-hidden group flex flex-col justify-between min-h-[160px] lg:col-span-2">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none" />
                     <div className="relative z-10">
                         <div className="flex justify-between items-start mb-4">
                             <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
                                 <DollarSign size={20} />
                             </div>
-                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-[10px] text-emerald-400 font-mono font-bold">YTD INFLOW</span>
+                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-[10px] text-emerald-400 font-mono font-bold">TODAY ONLY • RESETS DAILY</span>
                         </div>
-                        <p className="text-xs font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Total Sales Revenue</p>
-                        <h3 className="text-4xl font-black text-emerald-400 tracking-tighter truncate">{formatCurrency(stats.totalSalesRevenue)}</h3>
+                        <p className="text-xs font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Total Sales Today</p>
+                        <h3 className="text-5xl font-black text-emerald-400 tracking-tighter truncate">{formatCurrency(stats.totalSalesToday)}</h3>
                     </div>
                 </div>
 
