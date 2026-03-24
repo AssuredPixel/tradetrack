@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
-import { startOfYear, endOfYear } from "date-fns";
+import { startOfYear, endOfYear, startOfDay, endOfDay } from "date-fns";
 import StartingCapital from "@/models/StartingCapital";
 import Purchase from "@/models/Purchase";
 import Sale from "@/models/Sale";
@@ -34,10 +34,16 @@ export async function GET(req: Request) {
         const end = endOfYear(new Date(targetYear, 0, 1));
         const ytdQuery = { submittedAt: { $gte: start, $lte: end }, deletedAt: null };
 
+        // Today's date bounds (for daily-reset metrics)
+        const todayStart = startOfDay(new Date());
+        const todayEnd = endOfDay(new Date());
+        const todayQuery = { submittedAt: { $gte: todayStart, $lte: todayEnd }, deletedAt: null };
+
         // Ensure we fetch EVERYTHING needed for accurate financial metrics
-        const [purchases, sales, expenses, collectionsYTD, lodgmentsYTD, allCredits, allCollections] = await Promise.all([
+        const [purchases, sales, salesToday, expenses, collectionsYTD, lodgmentsYTD, allCredits, allCollections] = await Promise.all([
             Purchase.find(ytdQuery).lean(),
             Sale.find(ytdQuery).lean(),
+            Sale.find(todayQuery).lean(),
             Expense.find(ytdQuery).lean(),
             Collection.find(ytdQuery).lean(),
             Lodgment.find(ytdQuery).lean(),
@@ -49,8 +55,9 @@ export async function GET(req: Request) {
         const totalPurchasesCost = purchases.reduce((sum, p) => sum + (p.totalCost || 0), 0);
         const totalCapitalDeployed = baseCapital + totalPurchasesCost;
 
-        // 3. Total Sales Revenue
+        // 3. Total Sales Revenue (YTD) and Today only
         const totalSalesRevenue = sales.reduce((sum, s) => sum + (s.totalAmount || 0), 0);
+        const totalSalesToday = salesToday.reduce((sum, s) => sum + (s.totalAmount || 0), 0);
 
         // 4. True COGS: Sum of (costPricePerUnit × quantity) per individual sale.
         // This is calculated server-side from the costPricePerUnit that was snapshotted from
@@ -120,6 +127,7 @@ export async function GET(req: Request) {
                 startingCapital: baseCapital,
                 totalCapitalDeployed,
                 totalSalesRevenue,
+                totalSalesToday,
                 totalCOGS,
                 totalExpenses,
                 netProfitOrLoss,
