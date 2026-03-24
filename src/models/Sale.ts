@@ -3,6 +3,7 @@ import { Product } from '@/lib/types';
 
 export interface ISale extends Document {
     date: Date;
+    customerName?: string;
     product: Product;
     unitType: string;
     quantity: number;
@@ -20,6 +21,7 @@ export interface ISale extends Document {
 const SaleSchema: Schema = new Schema(
     {
         date: { type: Date, required: true },
+        customerName: { type: String },
         product: { type: String, enum: Object.values(Product), required: true },
         unitType: { type: String, required: true },
         quantity: { type: Number, required: true },

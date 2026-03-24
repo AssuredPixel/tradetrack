@@ -9,6 +9,7 @@ import { z } from "zod";
 import { rateLimit } from "@/lib/rate-limiter";
 
 const saleSchema = z.object({
+    customerName: z.string().optional(),
     product: z.string().min(1),
     unitType: z.string().min(1),
     quantity: z.number().positive(),
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
             }, { status: 400 });
         }
 
-        const { product, unitType, quantity, sellingPricePerUnit, totalAmount, notes, date } = validation.data;
+        const { customerName, product, unitType, quantity, sellingPricePerUnit, totalAmount, notes, date } = validation.data;
 
         await dbConnect();
 
@@ -58,6 +59,7 @@ export async function POST(req: Request) {
 
         const newSale = new Sale({
             date: new Date(date),
+            customerName,
             product,
             unitType,
             quantity,

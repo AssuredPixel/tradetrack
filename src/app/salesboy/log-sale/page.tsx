@@ -17,6 +17,7 @@ export default function LogSalePage() {
 
     const [form, setForm] = useState({
         date: new Date().toISOString().split('T')[0],
+        customerName: "",
         product: Product.FLOUR,
         unitType: "Bag",
         quantity: 0,
@@ -111,6 +112,16 @@ export default function LogSalePage() {
                             </div>
 
                             <div className="space-y-2">
+                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Customer Name (Optional)</Label>
+                                <Input
+                                    placeholder="Enter customer name"
+                                    className="input-brand outline-none border-none h-12 text-white"
+                                    value={form.customerName}
+                                    onChange={(e) => setForm({ ...form, customerName: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
                                 <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Product</Label>
                                 <select
                                     className="w-full bg-[#0a0f1d] border-none rounded-lg h-12 px-4 text-white focus:ring-2 focus:ring-emerald-500/20 outline-none appearance-none font-medium"
@@ -125,9 +136,9 @@ export default function LogSalePage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Unit Type (e.g. Bag, KG)</Label>
+                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Unit Type (e.g. Bags, rubber)</Label>
                                 <Input
-                                    placeholder="Bag"
+                                    placeholder="Bags"
                                     className="input-brand outline-none border-none h-12 text-white"
                                     value={form.unitType}
                                     onChange={(e) => setForm({ ...form, unitType: e.target.value })}
