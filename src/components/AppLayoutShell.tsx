@@ -21,7 +21,8 @@ import {
     User as UserIcon,
     Briefcase,
     Receipt,
-    Sparkles
+    Sparkles,
+    Package
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -42,7 +43,8 @@ const navLinks = {
     ],
     ADMIN: [
         { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-        { name: "Log Purchase", href: "/admin/log-purchase", icon: ShoppingCart },
+        { name: "Log Sale", href: "/admin/log-sale", icon: ShoppingCart },
+        { name: "Log Purchase", href: "/admin/log-purchase", icon: Package },
         { name: "Log Collection", href: "/admin/log-collection", icon: HandCoins },
         { name: "Log Lodgment", href: "/admin/log-lodgment", icon: Banknote },
         { name: "Today's Entries", href: "/admin/today", icon: FileText },
