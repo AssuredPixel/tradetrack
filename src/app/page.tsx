@@ -22,12 +22,14 @@ export default function Home() {
                 Join thousands of businesses already scaling with TradeTrack. Start your 14-day free trial today.
               </p>
               <div className="mt-10 flex justify-center gap-x-6">
+                {/* 
                 <a
                   href="/login"
                   className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-emerald-600 shadow-sm hover:bg-emerald-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   Get started
                 </a>
+                */}
                 <a href="#" className="text-sm font-semibold leading-6 text-white">
                   Learn more <span aria-hidden="true">→</span>
                 </a>

@@ -31,10 +31,12 @@ export function Hero() {
                     </p>
 
                     <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                        {/*
                         <Button size="lg" className="h-12 px-8 bg-emerald-600 text-white hover:bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
                             Get Started for Free
                             <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
+                        */}
                         <Button size="lg" variant="outline" className="h-12 px-8 border-white/10 bg-white/5 text-white hover:bg-white/10 backdrop-blur-sm">
                             View Demo
                         </Button>

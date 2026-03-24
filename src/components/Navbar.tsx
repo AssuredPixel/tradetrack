@@ -32,9 +32,11 @@ export function Navbar() {
                             Sign In
                         </Button>
                     </Link>
+                    {/*
                     <Button className="bg-emerald-600 text-white hover:bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
                         Get Started
                     </Button>
+                    */}
                 </div>
             </div>
         </nav>
