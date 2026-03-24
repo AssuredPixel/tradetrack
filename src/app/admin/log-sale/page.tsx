@@ -19,8 +19,8 @@ export default function AdminLogSalePage() {
         date: new Date().toISOString().split('T')[0],
         customerName: "",
         product: Product.FLOUR,
-        unitType: "Bag",
-        quantity: 0,
+        unitType: "50kg",
+        quantity: 1,
         sellingPricePerUnit: 0,
         notes: "",
     });
@@ -136,28 +136,38 @@ export default function AdminLogSalePage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Unit Type (e.g. Bags, rubber)</Label>
-                                <Input
-                                    placeholder="Bags"
-                                    className="input-brand outline-none border-none h-12 text-white"
+                                <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Unit Type</Label>
+                                <select
+                                    className="w-full bg-[#0a0f1d] border-none rounded-lg h-12 px-4 text-white focus:ring-2 focus:ring-emerald-500/20 outline-none appearance-none font-medium"
                                     value={form.unitType}
-                                    onChange={(e) => setForm({ ...form, unitType: e.target.value })}
+                                    onChange={(e) => {
+                                        const type = e.target.value;
+                                        setForm({ 
+                                            ...form, 
+                                            unitType: type, 
+                                            quantity: type === "25kg" ? 0.5 : (form.quantity === 0.5 ? 1 : form.quantity)
+                                        });
+                                    }}
                                     required
-                                />
+                                >
+                                    <option value="50kg">50kg</option>
+                                    <option value="25kg">25kg</option>
+                                    <option value="50 liter oil">50 liter oil</option>
+                                    <option value="Other">Other</option>
+                                </select>
                             </div>
 
                             <div className="space-y-2">
                                 <Label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Quantity</Label>
-                                <select
-                                    className="w-full bg-[#0a0f1d] border-none rounded-lg h-12 px-4 text-white focus:ring-2 focus:ring-emerald-500/20 outline-none appearance-none font-medium"
+                                <Input
+                                    type="number"
+                                    step="any"
+                                    placeholder="0"
+                                    className="input-brand outline-none border-none h-12 text-white"
                                     value={form.quantity || ""}
                                     onChange={(e) => setForm({ ...form, quantity: Number(e.target.value) })}
                                     required
-                                >
-                                    <option value="" disabled>Select Quantity</option>
-                                    <option value={1}>50kg (Full Bag)</option>
-                                    <option value={0.5}>25kg (Half Bag)</option>
-                                </select>
+                                />
                             </div>
 
                             <div className="space-y-2">
