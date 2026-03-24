@@ -132,7 +132,14 @@ export default function TodaysEntriesPage() {
                                         <tr key={sale._id} className="group hover:bg-emerald-500/5 transition-colors">
                                             <td className="px-6 py-4">
                                                 <p className="font-bold text-white text-sm">{sale.product.replace('_', ' ')}</p>
-                                                <p className="text-[10px] text-slate-500">{format(new Date(sale.submittedAt), "hh:mm a")}</p>
+                                                <div className="flex flex-col gap-0.5 mt-0.5">
+                                                    <p className="text-[10px] text-slate-500">{format(new Date(sale.submittedAt), "hh:mm a")}</p>
+                                                    {sale.customerName && (
+                                                        <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mt-1">
+                                                            To: {sale.customerName}
+                                                        </p>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 text-slate-300 text-sm">{sale.quantity} {sale.unitType}s</td>
                                             <td className="px-6 py-4 text-slate-300 text-sm">₦{(sale.sellingPricePerUnit || 0).toLocaleString()}</td>

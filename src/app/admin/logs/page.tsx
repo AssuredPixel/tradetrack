@@ -150,8 +150,15 @@ export default function AuditLogsPage() {
                                         <tbody className="divide-y divide-white/5">
                                             {logs.salesboyActivity.sales.map(s => (
                                                 <tr key={s._id} className="hover:bg-white/5 transition-colors">
-                                                    <td className="px-6 py-4 font-bold text-white text-sm flex items-center gap-2">
-                                                        <UserCircle2 size={14} className="text-slate-500" /> {s.submittedBy}
+                                                    <td className="px-6 py-4">
+                                                        <div className="font-bold text-white text-sm flex items-center gap-2">
+                                                            <UserCircle2 size={14} className="text-slate-500" /> {s.submittedBy}
+                                                        </div>
+                                                        {s.customerName && (
+                                                            <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest flex items-center gap-1">
+                                                                <span className="text-emerald-500 font-black">To:</span> {s.customerName}
+                                                            </p>
+                                                        )}
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <p className="font-bold text-slate-300">{s.quantity} {s.unitType}s {s.product?.replace('_', ' ')} @ ₦{s.sellingPricePerUnit}</p>
