@@ -26,7 +26,7 @@ export default function LogPurchasePage() {
         notes: "",
     });
 
-    const totalCost = form.quantity * form.purchasePricePerUnit;
+    const totalCost = form.unitType === "25kg" ? form.purchasePricePerUnit : form.quantity * form.purchasePricePerUnit;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -166,7 +166,8 @@ export default function LogPurchasePage() {
                                     type="number"
                                     step="any"
                                     placeholder="0"
-                                    className="input-brand outline-none border-none h-12 text-white"
+                                    className="input-brand outline-none border-none h-12 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={form.unitType === "25kg"}
                                     value={form.quantity || ""}
                                     onChange={(e) => setForm({ ...form, quantity: Number(e.target.value) })}
                                     required
