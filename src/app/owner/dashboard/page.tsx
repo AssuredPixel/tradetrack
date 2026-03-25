@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-    Briefcase, Loader2,
+    Briefcase, Loader2, TrendingUp, TrendingDown,
     ArrowRight, DollarSign, PackageOpen, CreditCard,
     Landmark, Wallet, Activity, ShoppingCart,
     Sparkles
@@ -115,6 +115,8 @@ export default function OwnerDashboard() {
         return `₦${(amount || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
     };
 
+    const isProfit = stats.netProfitOrLoss >= 0;
+
     return (
         <div className="max-w-[1400px] mx-auto space-y-8 pb-12">
 
@@ -161,6 +163,29 @@ export default function OwnerDashboard() {
                         </div>
                         <p className="text-xs font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Total Sales Today</p>
                         <h3 className="text-5xl font-black text-emerald-400 tracking-tighter truncate">{formatCurrency(stats.totalSalesToday)}</h3>
+                    </div>
+                </div>
+
+                {/* 2. Net Profit / Loss (YTD) */}
+                <div className={`glass-panel p-6 rounded-2xl border relative overflow-hidden group lg:col-span-2 ${isProfit ? 'border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)]' : 'border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.1)]'}`}>
+                    <div className={`absolute top-0 right-0 w-64 h-64 blur-3xl rounded-full pointer-events-none ${isProfit ? 'bg-emerald-500/20' : 'bg-rose-500/20'}`} />
+                    <div className="relative z-10 flex flex-col justify-between h-full min-h-[140px]">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className={`p-2 rounded-lg ${isProfit ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
+                                {isProfit ? <TrendingUp size={24} /> : <TrendingDown size={24} />}
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider border ${isProfit ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'}`}>
+                                NET YTD PERFORMANCE
+                            </span>
+                        </div>
+                        <div>
+                            <p className={`text-xs font-bold uppercase tracking-widest mb-2 ${isProfit ? 'text-emerald-500/70' : 'text-rose-500/70'}`}>
+                                Net {currentYear} {isProfit ? 'Profit' : 'Loss'}
+                            </p>
+                            <h3 className={`text-4xl md:text-5xl font-black truncate ${isProfit ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                {isProfit ? '+ ' : '- '}{formatCurrency(Math.abs(stats.netProfitOrLoss))}
+                            </h3>
+                        </div>
                     </div>
                 </div>
 
